@@ -5,8 +5,7 @@ import java.util.List;
 
 /**
  * 
- * @author giulio
- * MOCK CLASS TO STORE DATA INSTEAD OF DB
+ * @author giulio MOCK CLASS TO STORE DATA INSTEAD OF DB
  */
 
 public class UserRepository {
@@ -45,5 +44,9 @@ public class UserRepository {
 
 	public List<User> getUsers() {
 		return this.users;
+	}
+
+	public void createUser(User user) {
+		this.users.add(user);
 	}
 }

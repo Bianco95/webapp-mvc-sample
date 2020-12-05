@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.jersey</groupId>
-    <artifactId>jerseyRest</artifactId>
+    <groupId>rest-api</groupId>
+    <artifactId>rest-api</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jerseyRest Jersey Webapp</name>
+    <name>rest-api Jersey Webapp</name>
     <build>
-        <finalName>jerseyRest</finalName>
+        <finalName>rest-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

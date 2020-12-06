@@ -46,7 +46,26 @@ public class UserRepository {
 		return this.users;
 	}
 
+	public User getUserByName(String firstName) {
+		for(User user: this.users) {
+			if(user.getFirstName().equals(firstName)) {
+				return user;
+			}
+		}
+		return null;
+	}
+	
+	public User getUserByLastName(String lastName) {
+		for(User user: this.users) {
+			if(user.getLastName().equals(lastName)) {
+				return user;
+			}
+		}
+		return null;
+	}
+
 	public void createUser(User user) {
 		this.users.add(user);
 	}
+
 }

@@ -3,16 +3,20 @@ package com.rest_api.rest_api;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class User {
+public class Customer {
 	
-	private int amount;
+	private int customerID;
+	private int balance;
 	private String firstName;
 	private String lastName;
-	private String address;
 	
 	/*
 	 * SETTERS
 	 */
+	
+	public void setCustomerID(int customerID) {
+		this.customerID = customerID;
+	}
 	
 	public void setFirstName(String name) {
 		this.firstName = name;
@@ -22,20 +26,20 @@ public class User {
 		this.lastName = lastname;
 	}
 	
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setBalance(int amount) {
+		this.balance = amount;
 	}
 	
-	public void setAddress(String address) {
-		this.address = address;
-	}
 	
 	/*
 	 * GETTERS
 	 */
-
-	public int getAmount() {
-		return this.amount;
+	public int getCustomerID() {
+		return this.customerID;
+	}
+	
+	public int getBalance() {
+		return this.balance;
 	}
 	
 	public String getFirstName() {
@@ -46,7 +50,4 @@ public class User {
 		return this.lastName;
 	}
 	
-	public String getAddress() {
-		return this.address;
-	}
 }

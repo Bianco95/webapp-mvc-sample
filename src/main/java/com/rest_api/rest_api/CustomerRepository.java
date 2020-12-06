@@ -7,7 +7,7 @@ import java.sql.*;
 
 /**
  * 
- * @author giulio MOCK CLASS TO STORE DATA INSTEAD OF DB
+ * @author giulio
  */
 
 public class CustomerRepository {
@@ -56,10 +56,8 @@ public class CustomerRepository {
 		try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			System.out.println(rs);
 			// iterate over the returned values
 			while (rs.next()) {
-				System.out.println(rs.getString("firstName"));
 				customers.add(this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
 						rs.getString("lastName"), rs.getInt("balance")));
 			}
@@ -86,19 +84,20 @@ public class CustomerRepository {
 		return null;
 	}
 
-	public Customer createCustomer(Customer newCustomer) {
+	public int createCustomer(Customer newCustomer) {
 		String sql = "INSERT INTO customers VALUES (NULL,?,?,?)";
+		int queryResult = 0;
 		try {
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, newCustomer.getFirstName());
 			st.setString(2, newCustomer.getLastName());
 			st.setInt(3, newCustomer.getBalance());
-			st.executeUpdate();
+			queryResult = st.executeUpdate();
 		} catch (Exception e) {
-			System.out.println(e);
+			return queryResult;
 		}
 
-		return null;
+		return queryResult;
 	}
 
 	public void updateCustomer(Customer customer) {

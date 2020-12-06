@@ -3,6 +3,8 @@ package com.rest_api.rest_api;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rest_api.rest_api.utils.DbController;
+
 import java.sql.*;
 
 /**
@@ -14,30 +16,6 @@ public class CustomerRepository {
 
 	private static CustomerRepository istance = null;
 	private List<Customer> customers;
-
-	Connection conn = null;
-
-	/*
-	 * CONSTRUCTOR
-	 */
-
-	public CustomerRepository() {
-		this.customers = new ArrayList<Customer>();
-
-		String dbName = "masterdb";
-		String dbUserName = "root";
-		String dbPassword = "password_secret";
-		String connectionString = "jdbc:mysql://172.17.0.2/" + dbName + "?user=" + dbUserName + "&password="
-				+ dbPassword + "&useUnicode=true&characterEncoding=UTF-8" + "&allowPublicKeyRetrieval=true"
-				+ "&useSSL=false";
-
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(connectionString);
-		} catch (Exception e) {
-			System.out.println("Error occurred \n" + e.toString());
-		}
-	}
 
 	public static CustomerRepository getIstance() {
 		if (istance == null)
@@ -54,7 +32,7 @@ public class CustomerRepository {
 		List<Customer> customers = new ArrayList<Customer>();
 		String sql = "SELECT * from customers";
 		try {
-			Statement st = conn.createStatement();
+			Statement st = DbController.getIstance().getConnection().createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			// iterate over the returned values
 			while (rs.next()) {
@@ -70,7 +48,7 @@ public class CustomerRepository {
 	public Customer getCustomerByCustomerID(int customerID) {
 		String sql = "SELECT * from customers WHERE customerID=" + customerID;
 		try {
-			Statement st = conn.createStatement();
+			Statement st = DbController.getIstance().getConnection().createStatement();
 			ResultSet rs = st.executeQuery(sql);
 
 			if (rs.next()) {
@@ -88,7 +66,7 @@ public class CustomerRepository {
 		String sql = "INSERT INTO customers VALUES (NULL,?,?,?)";
 		int queryResult = 0;
 		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, newCustomer.getFirstName());
 			st.setString(2, newCustomer.getLastName());
 			st.setInt(3, newCustomer.getBalance());
@@ -103,7 +81,7 @@ public class CustomerRepository {
 	public void updateCustomer(Customer customer) {
 		String sql = "UPDATE customers set firstName=?, lastName=?, balance=? where customerID=?";
 		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, customer.getFirstName());
 			st.setString(2, customer.getLastName());
 			st.setInt(3, customer.getBalance());
@@ -117,7 +95,7 @@ public class CustomerRepository {
 	public void deleteCustomer(int customerID) {
 		String sql = "DELETE from customers where customerID=?";
 		try {
-			PreparedStatement st = conn.prepareStatement(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, customerID);
 			st.executeUpdate();
 		}catch(Exception e) {

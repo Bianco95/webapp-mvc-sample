@@ -1,4 +1,4 @@
-package com.rest_api.rest_api;
+package com.rest_api.rest_api.utils;
 
 public class ApiResponse {
 

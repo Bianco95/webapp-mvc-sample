@@ -1,14 +1,14 @@
-package com.rest_api.rest_api;
+package com.rest_api.rest_api.utils;
 
 import java.util.List;
 
 public class ApiContentResponse<T> {
 
-	String message;
-	int code;
-	int page;
-	int pages;
-	List<T> contents;
+	private String message;
+	private int code;
+	private int page;
+	private int pages;
+	private List<T> contents;
 	
 	/*
 	 * GETTERS

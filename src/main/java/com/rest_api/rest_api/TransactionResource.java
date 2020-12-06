@@ -22,8 +22,8 @@ import org.codehaus.jackson.map.ObjectWriter;
 import com.rest_api.rest_api.utils.IResourceAPI;
 import com.rest_api.rest_api.utils.Utils;
 
-@Path("/customers")
-public class CustomerResource implements IResourceAPI<Customer> {
+@Path("/transactions")
+public class TransactionResource implements IResourceAPI<Transaction> {
 
 	private ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
@@ -33,7 +33,7 @@ public class CustomerResource implements IResourceAPI<Customer> {
 			@QueryParam("page") Integer page) {
 		System.out.println("[getCustomers] called...");
 
-		List<Customer> customers = CustomerRepository.getIstance().getCustomers();
+		List<Transaction> customers = TransactionRepository.getIstance().getTransactions();
 		try {
 			int sizeOfPages = 1;
 			int pages = Math.round(customers.size() / 25) == 0 ? 1 : Math.round(customers.size() / 25) + 1;
@@ -42,7 +42,7 @@ public class CustomerResource implements IResourceAPI<Customer> {
 			} else {
 				sizeOfPages = 25 * page;
 			}
-			List<Customer> paginatedCustomer = new ArrayList<Customer>();
+			List<Transaction> paginatedCustomer = new ArrayList<Transaction>();
 			try {
 				paginatedCustomer = customers.subList(25 * (page - 1), sizeOfPages);
 			} catch (Exception e) {
@@ -67,13 +67,13 @@ public class CustomerResource implements IResourceAPI<Customer> {
 	public Response findById(@PathParam("customerID") int id) {
 		System.out.println("[getCustomerByID] called...");
 		try {
-			Customer customer = CustomerRepository.getIstance().getCustomerByCustomerID(id);
-			if(customer == null) {
-				throw new Error("unable to retrieve customer");
+			Transaction transaction = TransactionRepository.getIstance().getTransactionByTransactionID(id);
+			if(transaction == null) {
+				throw new Error("unable to retrieve transaction");
 			}
 		return Response.ok(
 				this.ow.writeValueAsString(
-						Utils.ApiSingleResponseBuilder(200, customer)),
+						Utils.ApiSingleResponseBuilder(200, transaction)),
 				MediaType.APPLICATION_JSON).build();
 		} catch(Exception err) {
 			return Response.serverError().entity(err.getMessage()).build();
@@ -84,14 +84,14 @@ public class CustomerResource implements IResourceAPI<Customer> {
 	@Path("customer")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@Override
-	public Response create(Customer object) {
+	public Response create(Transaction object) {
 		System.out.println("[createCustomer] Going to create new customer...");
 		try {
-			int result = CustomerRepository.getIstance().createCustomer(object);
+			int result = TransactionRepository.getIstance().createCustomer(object);
 			if(result != 1) {
-				return Response.serverError().entity("unable to add customer").build();
+				return Response.serverError().entity("unable to add transaction").build();
 			}
-			return Response.ok(this.ow.writeValueAsString(Utils.ApiResponseBuilder("customer created", 201)),
+			return Response.ok(this.ow.writeValueAsString(Utils.ApiResponseBuilder("transaction created", 201)),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.getMessage()).build();
@@ -102,10 +102,10 @@ public class CustomerResource implements IResourceAPI<Customer> {
 	@Path("customer")
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@Override
-	public Response update(Customer object) {
+	public Response update(Transaction object) {
 		System.out.println("[updateCustomer] Going to update customer...");
 		try {
-			CustomerRepository.getIstance().updateCustomer(object);
+			TransactionRepository.getIstance().updateTransaction(object);
 			return Response.ok("customer updated", MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {
 			return Response.serverError().entity("Internal error").build();
@@ -119,11 +119,11 @@ public class CustomerResource implements IResourceAPI<Customer> {
 	public Response delete(@PathParam("customerID") int id) {
 		System.out.println("[deleteCustomer] Going to delete customer...");
 		try {
-			Customer customerToDelete = CustomerRepository.getIstance().getCustomerByCustomerID(id);
-			if (customerToDelete == null) {
+			Transaction transactionToDelete = TransactionRepository.getIstance().getTransactionByTransactionID(id);
+			if (transactionToDelete == null) {
 				throw new Error("Customer not found");
 			}
-			CustomerRepository.getIstance().deleteCustomer(id);
+			TransactionRepository.getIstance().deleteCustomer(id);
 			return Response.ok(this.ow.writeValueAsString(Utils.ApiResponseBuilder("customer deleted", 200)),
 					MediaType.APPLICATION_JSON).build();
 		} catch (Exception e) {

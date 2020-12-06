@@ -5,9 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.rest_api.rest_api.ApiContentResponse;
-import com.rest_api.rest_api.ApiResponse;
-
 public class Utils {
 
 	public static <T> List<T> intersection(List<T> list1, List<T> list2) {
@@ -51,6 +48,13 @@ public class Utils {
 		ApiResponse apiResponse = new ApiResponse();
 		apiResponse.setMessage(message);
 		apiResponse.setCode(code);
+		return apiResponse;
+	}
+	
+	public static ApiSingleResponse<Object> ApiSingleResponseBuilder(int code, Object object) {
+		ApiSingleResponse<Object> apiResponse = new ApiSingleResponse<Object>();
+		apiResponse.setCode(code);
+		apiResponse.setObject(object);
 		return apiResponse;
 	}
 	

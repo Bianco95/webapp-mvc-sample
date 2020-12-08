@@ -110,6 +110,7 @@ public class CustomerResource extends HttpServlet {
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("customer created", 201)));
 		} catch (Exception e) {
+			System.out.println(e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}

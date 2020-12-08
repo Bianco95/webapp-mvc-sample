@@ -1,0 +1,44 @@
+body {
+  padding: 0;
+  margin: 0;
+  background: #f2f6e9;
+}
+/*--- navigation bar ---*/
+.navbar {
+  background:#527318;
+}
+.nav-link,
+.navbar-brand {
+  color: #ffe75e;
+  cursor: pointer;
+}
+.nav-link {
+  margin-right: 1em;
+}
+.nav-link:hover{
+  color: #feb72b;
+}
+.navbar-brand:hover{
+  color: #ffe75e;
+}
+.navbar-collapse {
+  justify-content: flex-end;
+}
+
+.header {
+  background-image: url('img/background.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.carousel .item {
+  height: 300px;
+}
+
+.item,
+.img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-height: 300px;
+}

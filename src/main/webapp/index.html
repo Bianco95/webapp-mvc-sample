@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href='https://fonts.googleapis.com/css?family=Bellota' />
+    <meta name="viewport" content="width=device-width, initial-scale=0.56, maximum-scale=3.0, minimum-scale=0.56" />
+    <link rel="stylesheet" href="css-custom/styles.css">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand custom-text" href="index.html">
+            Mvc sample</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+            aria-controls="navbarResponsive" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <!---
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+            </ul>
+            <button class="btn btn-primary" onclick="window.location.href='login.html'" type="submit">Login</button>
+            -->
+        </div>
+    </nav>
+
+    <header>
+
+        <div id="carouselExample" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner" role="listbox">
+                <div class="carousel-item active" style="background-image: url('img/background.jpg')">
+                    <div class="carousel-caption text-center">
+                        <h2 class="display-4">Sign up or login to see transactions</h2>
+                        <button class="btn btn-success custom-text" id="reg"
+                            onclick="window.location.href='signup.html'" type="submit">Sign up</button>
+                        <br>
+                        <button class="btn btn-success custom-text" id="reg"
+                            onclick="window.location.href='signup.html'" type="submit">Login</button>
+
+                    </div>
+                </div>
+            </div>
+
+    </header>
+
+    <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
+        <div class="container text-center">
+            <small>Copyright &copy; Bianco95</small>
+        </div>
+    </footer>
+
+
+    <script src="jquery/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+</html>

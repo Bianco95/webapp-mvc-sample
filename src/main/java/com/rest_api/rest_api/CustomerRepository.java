@@ -37,7 +37,7 @@ public class CustomerRepository {
 			// iterate over the returned values
 			while (rs.next()) {
 				customers.add(this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
-						rs.getString("lastName"), rs.getInt("balance")));
+						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance")));
 			}
 		} catch (Exception e) {
 			System.out.println("Error occurred\n" + e.toString());
@@ -53,7 +53,7 @@ public class CustomerRepository {
 
 			if (rs.next()) {
 				return this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
-						rs.getString("lastName"), rs.getInt("balance"));
+						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance"));
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -82,6 +82,12 @@ public class CustomerRepository {
 		String sql = "INSERT INTO customers VALUES (NULL,?, ?, ?, ?, ?)";
 		int queryResult = 0;
 		try {
+			
+			System.out.println(newCustomer.getFirstName());
+			System.out.println(newCustomer.getLastName());
+			System.out.println(newCustomer.getUsername());
+			System.out.println(newCustomer.getPassword());
+			
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, newCustomer.getFirstName());
 			st.setString(2, newCustomer.getLastName());
@@ -121,11 +127,12 @@ public class CustomerRepository {
 		}
 	}
 
-	private Customer createCustomerFromDB(int customerID, String firstName, String lastName, int balance) {
+	private Customer createCustomerFromDB(int customerID, String firstName, String lastName, String username, int balance) {
 		Customer newCustomer = new Customer();
 		newCustomer.setCustomerID(customerID);
 		newCustomer.setFirstName(firstName);
 		newCustomer.setLastName(lastName);
+		newCustomer.setUsername(username);
 		newCustomer.setBalance(balance);
 		return newCustomer;
 	}

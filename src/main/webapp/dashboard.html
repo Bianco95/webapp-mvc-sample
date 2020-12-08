@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang=it dir="ltr">
+
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="jquery/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css-custom/styles.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
+        <a class="navbar-brand custom-text" href="index.html">
+            Mvc sample</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+            aria-controls="navbarResponsive" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+            </ul>
+            <button class="btn btn-success" onclick="Logout()" type="submit">Logout</button>
+        </div>
+    </nav>
+    <div class="wrapper fadeInDown">
+        <h1 style="font-family: Bellota; color: rgba(138, 28, 96, 0.8);">Transactions</h1>
+        <table id="transactionTable" class="table table-hover center"
+            style="border: 0.5px solid rgb(7, 65, 8); background-color: rgb(162, 230, 192, 0.4);">
+            <thead>
+                <tr>
+                    <th style="text-align:center;" scope="col">#</th>
+                    <th style="text-align:center;" scope="col">Customer ID</th>
+                    <th style="text-align:center;" scope="col">Amount</th>
+                    <th style="text-align:center;" scope="col">Purchase date</th>
+                </tr>
+            <tbody>
+            </tbody>
+        </table>
+        <!--
+        <nav aria-label="...">
+            <ul class="pagination pagination-md">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+            </ul>
+        </nav>
+        -->
+    </div>
+
+</body>
+
+<script>
+
+    // WIP
+    // checkSessionExpired();
+
+    fetchTransactions();
+
+
+    function fetchTransactions() {
+
+        fetchTransactionsAjax(function (result) {
+            const response = JSON.parse(result);
+            if (response.code === 200) {
+                let table = document.getElementById("transactionTable");
+                table = cleanTable(table);
+                for (let i = 0; i < response["contents"].length; i++) {
+
+                    let row = table.insertRow(i + 1);
+                    let cell1 = row.insertCell(0);
+                    let cell2 = row.insertCell(1);
+                    let cell3 = row.insertCell(2);
+                    let cell4 = row.insertCell(3);
+
+                    cell1.innerHTML = i + 1;
+                    cell2.innerHTML = response["contents"][i]["customerID"];
+                    cell3.innerHTML = response["contents"][i]["amount"];
+                    cell4.innerHTML = response["contents"][i]["purchaseDate"];
+
+                    cell1.style.textAlign = "center";
+                    cell2.style.textAlign = "center";
+                    cell3.style.textAlign = "center";
+                    cell4.style.textAlign = "center";
+                }
+            } else {
+                // do something
+            }
+        });
+    }
+
+    // asynchronous call that is called after the above function
+    // the program wait until an answer is given
+
+
+    function fetchTransactionsAjax(callback) {
+        const username = parent.document.URL.substring(parent.document.URL.indexOf('=') + 1, parent.document.URL.length);
+        const cookie = document.cookie.toString();
+        console.log(cookie);
+        if (!cookie) {
+            alert("session expired");
+            window.location.replace("http://localhost:8080/rest-api/signin.html");
+        }
+        const username2 = cookie.substring(cookie.indexOf('=') + 1, cookie.length);
+        console.log(username2);
+        let result;
+        $.ajax({
+            url: 'http://localhost:8080/rest-api/transactions',
+            type: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: function (data) {
+                result = data;
+            }
+        }).done(function () {
+            callback(result);
+        }).fail(function () {
+            alert("something went wrong during sign up!");
+            callback(result);
+        });
+    }
+
+    function cleanTable(table) {
+        let rows = table.rows;
+        let i = rows.length;
+        while (--i) {
+            rows[i].parentNode.removeChild(rows[i]);
+        }
+        return table;
+    }
+
+</script>
+
+</body>
+
+</html>

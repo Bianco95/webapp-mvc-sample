@@ -40,12 +40,10 @@ public class LoginManager extends HttpServlet {
 				response.getOutputStream()
 						.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("success", 200)));
 			} else {
-				response.getOutputStream()
-						.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("unauthorized", 403)));
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 		} catch (Exception e) {
-			response.getOutputStream()
-					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("unauthorized", 403)));
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 		}
 
 	}

@@ -64,7 +64,7 @@
         </form>
       </div>
       <div id="formFooter">
-        Already registered? <a class="underlineHover" href="index.html">Sign in</a>
+        Already registered? <a class="underlineHover" href="signin.html">Sign in</a>
       </div>
 
     </div>
@@ -268,11 +268,6 @@
 
       customer.setPassword_1(password_1_document.value);
 
-      console.log("----------------------------------")
-      console.log(JSON.stringify(customer.getLastname()))
-      console.log(JSON.stringify(customer.getName()))
-      console.log("----------------------------------")
-
       signUp(customer.getUsername(), customer.getPassword_1(), customer.getName(), customer.getLastname());
 
     }
@@ -282,15 +277,12 @@
     // in the database
 
     function signUp(username, password, firstName, lastName) {
-      console.log("#########################")
-      console.log(JSON.stringify(firstName))
-      console.log(JSON.stringify(lastName))
-      console.log("#########################")
 
       signUpAjax(username, password, firstName, lastName, function (result) {
         const response = JSON.parse(result);
         if (response.code === 201) {
           alert("Sign up successfully!");
+          window.location.replace("http://localhost:8080/rest-api/signin.html");
         } else {
           alert("something went wrong during sign up!");
         }
@@ -311,10 +303,6 @@
         username: username,
         password: password
       }
-
-      console.log("#########################")
-      console.log(JSON.stringify(data))
-      console.log("#########################")
 
       $.ajax({
         url: 'http://localhost:8080/rest-api/customers',

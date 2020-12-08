@@ -1,0 +1,156 @@
+<html lang=it dir="ltr">
+
+<head>
+
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="jquery/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css-custom/styles.css" rel="stylesheet">
+    <title>Home</title>
+    <meta charset="utf-8">
+    <title>Login</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand custom-text" href="index.html">
+            Mvc sample</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+            aria-controls="navbarResponsive" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+          </ul>
+          <button class="btn btn-primary" onclick="window.location.href='login.php'" type="submit">Entra</button>
+        </div>
+    -->
+    </nav>
+    <br><br>
+
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+
+            <div class="fadeIn first">
+            </div>
+            <form id="log_user">
+                <input type="text" id="login" class="fadeIn second" name="login" placeholder="Username">
+                <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
+                <input type="button" onclick="Login()" class="fadeIn fourth" value="Login">
+            </form>
+            <div id="formFooter">
+                Do not have an account? <a class="underlineHover" href="signup.html">Sign up</a>
+            </div>
+
+        </div>
+    </div>
+    <footer id="sticky-footer" class="py-4 bg-dark text-white-50">
+        <div class="container text-center">
+            <small>Copyright &copy; Bianco95</small>
+        </div>
+    </footer>
+
+    <script>
+
+        var correctUsername = false;
+
+        var username = document.getElementById('login');
+        var password = document.getElementById('password');
+        correctUsername = checkUsername(username.value);
+
+        setInterval(checkColors, 300);
+
+        function Login() {
+
+            if (!correctUsername[0]) {
+                if (correctUsername[1] == 0) { alert("username is wrong"); }
+                else {
+                    alert("username can only contains numbers and characters!");
+                } return;
+            }
+
+            signIn(username.value, password.value);
+        }
+
+        function checkColors() {
+            correctUsername = checkUsername(username.value);
+            if (!correctUsername[0] && username.value.length > 0) {
+                if (correctUsername[1] == 1 || correctUsername[1] == 2) {
+                    username.style.color = "red";
+                }
+            } else { username.style.color = "black"; }
+        }
+
+        function checkUsername(username) {
+            var letterenumeri = /^[0-9a-zA-Z]+$/;
+            if (username.length > 3) {
+                if (username.match(letterenumeri)) {
+                    return [true, 0];
+                } else {
+                    return [false, 1];
+                }
+            } else {
+                return [false, 2];
+            }
+        }
+
+        function signIn(username, password) {
+
+            signInAjax(username, password, function (result) {
+                try {
+                    const response = JSON.parse(result);
+                    if (response.code === 200) {
+                        alert("Sign in successfully!");
+                        var date = new Date();
+                        date.setTime(date.getTime() + (2 * 60 * 1000));
+                        var expires = "; expires=" + date.toGMTString();
+                        document.cookie = "username=" + username + ";expires=" + expires;
+                        window.location.replace("http://localhost:8080/rest-api/dashboard.html");
+                    } else {
+                        alert("something went wrong during sign in!");
+                    }
+                } catch (err) {
+                    alert("something went wrong during sign in!");
+                }
+            });
+        }
+
+        // asynchronous call that is called after the above function
+        // the program wait until an answer is given
+
+        function signInAjax(username, password, callback) {
+            var result;
+            data = {
+                username: username,
+                password: password
+            }
+            const encodedAuth = btoa(username + ":" + password);
+            $.ajax({
+                url: 'http://localhost:8080/rest-api/login',
+                type: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Content-Length": data.length,
+                    "Authorization": encodedAuth
+                },
+                success: function (data) {
+                    result = data;
+                }
+            }).done(function () {
+                callback(result);
+            }).fail(function () {
+                alert("something went wrong during sign in!");
+                callback(result);
+            });
+        }
+    </script>
+</body>
+
+</html>

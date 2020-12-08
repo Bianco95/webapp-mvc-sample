@@ -7,12 +7,15 @@ import java.sql.Timestamp;
  *
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Transaction {
 	
 	private int transactionID;
 	private int customerID;
 	private int amount;
-	private Timestamp purchase_date;
+	private String purchase_date;
 	
 	/*
 	 * SETTERS
@@ -30,7 +33,7 @@ public class Transaction {
 		return this.amount;
 	}
 	
-	public Timestamp getPurchaseDate() {
+	public String getPurchaseDate() {
 		return this.purchase_date;
 	}
 	
@@ -50,7 +53,7 @@ public class Transaction {
 		this.amount = amount;
 	}
 	
-	public void setPurchaseDate(Timestamp purchase_date) {
+	public void setPurchaseDate(String purchase_date) {
 		this.purchase_date = purchase_date;
 	}
 	

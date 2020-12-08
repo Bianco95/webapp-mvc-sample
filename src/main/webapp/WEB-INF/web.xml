@@ -11,8 +11,32 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>Jersey Web Application</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+    
+    <servlet>
+		<servlet-name>Customer</servlet-name>
+		<servlet-class>com.rest_api.rest_api.CustomerResource</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Customer</servlet-name>
+		<url-pattern>/customers</url-pattern>
+	</servlet-mapping>
+	
+	 <servlet>
+		<servlet-name>Transaction</servlet-name>
+		<servlet-class>com.rest_api.rest_api.TransactionResource</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Transaction</servlet-name>
+		<url-pattern>/transactions</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<servlet-class>com.rest_api.rest_api.LoginManager</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	
 </web-app>

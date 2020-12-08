@@ -2,7 +2,7 @@ package com.rest_api.rest_api.utils;
 
 import java.util.List;
 
-public class ApiContentResponse<T> {
+public class ApiMultipleResponse<T> {
 
 	private String message;
 	private int code;
@@ -13,6 +13,7 @@ public class ApiContentResponse<T> {
 	/*
 	 * GETTERS
 	 */
+	
 	public String getMessage() {
 		return this.message;
 	}

@@ -62,14 +62,32 @@ public class CustomerRepository {
 		return null;
 	}
 
+	public int getCustomerByUsernameAndPassword(String username, String password) {
+		String sql = "SELECT * from customers WHERE username='" + username + "' AND password='" + password +"'";
+		try {
+			Statement st = DbController.getIstance().getConnection().createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if (rs.next()) {
+				return 0;
+			} else {
+				return 1;
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			return 1;
+		}
+	}
+
 	public int createCustomer(Customer newCustomer) {
-		String sql = "INSERT INTO customers VALUES (NULL,?,?,?)";
+		String sql = "INSERT INTO customers VALUES (NULL,?, ?, ?, ?, ?)";
 		int queryResult = 0;
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, newCustomer.getFirstName());
 			st.setString(2, newCustomer.getLastName());
-			st.setInt(3, newCustomer.getBalance());
+			st.setString(3, newCustomer.getUsername());
+			st.setString(4, newCustomer.getPassword());
+			st.setInt(5, newCustomer.getBalance());
 			queryResult = st.executeUpdate();
 		} catch (Exception e) {
 			return queryResult;
@@ -87,22 +105,22 @@ public class CustomerRepository {
 			st.setInt(3, customer.getBalance());
 			st.setInt(4, customer.getCustomerID());
 			st.executeUpdate();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-	
+
 	public void deleteCustomer(int customerID) {
 		String sql = "DELETE from customers where customerID=?";
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, customerID);
 			st.executeUpdate();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-	
+
 	private Customer createCustomerFromDB(int customerID, String firstName, String lastName, int balance) {
 		Customer newCustomer = new Customer();
 		newCustomer.setCustomerID(customerID);

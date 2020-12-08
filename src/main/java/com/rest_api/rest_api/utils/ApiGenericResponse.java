@@ -1,6 +1,6 @@
 package com.rest_api.rest_api.utils;
 
-public class ApiResponse {
+public class ApiGenericResponse {
 
 	String message;
 	int code;

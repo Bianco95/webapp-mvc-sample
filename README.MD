@@ -29,17 +29,17 @@
     ```
     
     initDB.sql initialize the database and it will create the relational tables needed to store the data. Some data will also be added.
-    **customers**<br \>
+    **customers**<br/>
     customerID | firstName | lastName | username | password | balance |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | Giulio | Bianchini | admin | 123456 | 0 |
 
-    **transactions**<br \>
+    **transactions**<br/>
     transactionID | customerID | amount | purchase_date |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | 2 | 10 | CURRENT_TIMESTAMP |
     
-    **superadmins**<br \>
+    **superadmins**<br/>
     adminID | username | 
     --- | --- | 
     1 | admin |  

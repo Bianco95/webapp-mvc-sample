@@ -28,18 +28,18 @@
     mysql -h 172.17.0.2 -u root -p masterdb < initDB.sql
     ```
     
-    initDB.sql initialize the database and it will create the relational tables needed to store the data. Some data will also be added.
+    initDB.sql initialize the database and it will create the relational tables needed to store the data. Some data will also be added.<br/>
     **customers**
     customerID | firstName | lastName | username | password | balance |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | Giulio | Bianchini | admin | 123456 | 0 |
 
-    **transactions**
+    **transactions**<br/>
 
     transactionID | customerID | amount | purchase_date |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | 2 | 10 | CURRENT_TIMESTAMP |
-    **superadmins**
+    **superadmins**<br/>
 
     adminID | username | 
     --- | --- | 

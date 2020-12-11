@@ -78,7 +78,7 @@ POST /rest-api/login
     "code": 200
 }
 ```
-######if the request fails, code 401 is returned
+###### if the request fails, code 401 is returned
 ---
 #### Transactions
 ```http
@@ -129,7 +129,7 @@ GET rest-api/transactions
     ]
 }
 ```
-######if the request fails, code 500 is returned
+###### if the request fails, code 500 is returned
 ---
 ```http
 POST rest-api/transactions
@@ -159,7 +159,7 @@ POST rest-api/transactions
     "code": 201
 }
 ```
-######if the request fails, code 500 is returned
+###### if the request fails, code 500 is returned
 ---
 ```http
 PUT rest-api/transactions
@@ -188,7 +188,7 @@ PUT rest-api/transactions
     "code": 201
 }
 ```
-######if the request fails, code 404 is returned if the transaction does not exist, otherwise 500
+###### if the request fails, code 404 is returned if the transaction does not exist, otherwise 500
 ---
 ```http
 DELETE rest-api/transactions
@@ -214,7 +214,7 @@ DELETE rest-api/transactions
 }
 ```
 ---
-######if the request fails, code 404 is returned if the transaction does not exist, otherwise 500
+###### if the request fails, code 404 is returned if the transaction does not exist, otherwise 500
 ---
 ---
 ---
@@ -274,7 +274,7 @@ GET rest-api/customers
     ]
 }
 ```
-######if the request fails, code 500 is returned
+###### if the request fails, code 500 is returned
 ---
 ```http
 POST rest-api/customers
@@ -306,7 +306,7 @@ POST rest-api/customers
     "code": 201
 }
 ```
-######if the request fails, code 500 is returned
+###### if the request fails, code 500 is returned
 ---
 ```http
 PUT rest-api/customers
@@ -335,7 +335,7 @@ PUT rest-api/customers
     "code": 201
 }
 ```
-######if the request fails, code 404 is returned if the customer does not exist, otherwise 500
+###### if the request fails, code 404 is returned if the customer does not exist, otherwise 500
 ---
 ```http
 DELETE rest-api/customers
@@ -361,4 +361,4 @@ DELETE rest-api/customers
 }
 ```
 ---
-######if the request fails, code 404 is returned if the customer does not exist, otherwise 500
+###### if the request fails, code 404 is returned if the customer does not exist, otherwise 500

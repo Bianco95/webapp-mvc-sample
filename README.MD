@@ -97,6 +97,11 @@ POST /rest-api/login
 GET rest-api/transactions
 ```
 
+
+| Header | Type | Description |
+| :--- | :--- | :--- |
+| `Authorization` | `string` | **Required**. username (only for debug, must be a token) <br> a simple customer can only see his transactions, while the admin can see all of them |
+
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `page` | `number` | **Not Required**. Use to get 25 element in order to paginate|
@@ -222,4 +227,150 @@ DELETE rest-api/transactions
 ```
 ---
 ######if the request fails, code 404 is returned if the transaction does not exist, otherwise 500
+---
+---
+---
+#### Customers
+```http
+GET rest-api/customers
+```
 
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `page` | `number` | **Not Required**. Use to get 25 element in order to paginate|
+
+
+#### Responses
+
+```javascript
+{
+    "message": string,
+    "code": number,
+    "page": number,
+    "pages": number,
+    "contents": Object[]
+}
+```
+***i.e. response of a correct get***
+``` javascript
+{
+    "message": "transactions",
+    "code": 200,
+    "page": 1,
+    "pages": 1,
+    "contents": [
+        {
+            "customerID": 1,
+            "balance": 0.0,
+            "username": "admin",
+            "password": null,
+            "firstName": "Giulio",
+            "lastName": "Bianchini"
+        },
+        {
+            "customerID": 2,
+            "balance": 100.0,
+            "username": "Pippo",
+            "password": null,
+            "firstName": "Dippy",
+            "lastName": "Dawg"
+        },
+        {
+            "customerID": 3,
+            "balance": 200.0,
+            "username": "Paperino",
+            "password": null,
+            "firstName": "Donald",
+            "lastName": "Duck"
+        }
+    ]
+}
+```
+######if the request fails, code 500 is returned
+---
+```http
+POST rest-api/customers
+```
+**Body**
+```javascript
+{
+    "customerID": 0,
+    "balance": 100,
+    "firstName": "Giampiero",
+    "lastName": "Rossi",
+    "username": "GiampRos",
+    "password": "123456"
+}
+```
+
+#### Responses
+
+```javascript
+{
+    "message": string,
+    "code": number,
+}
+```
+***i.e. response of a correct post***
+``` javascript
+{
+    "message": "customer created",
+    "code": 201
+}
+```
+######if the request fails, code 500 is returned
+---
+```http
+PUT rest-api/customers
+```
+**Body**
+```javascript
+{
+    "customerID": 2,
+    "balance": 100000,
+    "firstName": "Giampiero",
+    "lastName": "Rossi"
+}
+```
+#### Responses
+
+```javascript
+{
+    "message": string,
+    "code": number,
+}
+```
+***i.e. response of a correct put***
+``` javascript
+{
+    "message": "customer updated",
+    "code": 201
+}
+```
+######if the request fails, code 404 is returned if the customer does not exist, otherwise 500
+---
+```http
+DELETE rest-api/customers
+```
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `number` | **Required** Id of the customer to delete|
+
+
+#### Responses
+
+```javascript
+{
+    "message": string,
+    "code": number,
+}
+```
+***i.e. response of a correct delete***
+``` javascript
+{
+    "message": "customer deleted",
+    "code": 200
+}
+```
+---
+######if the request fails, code 404 is returned if the customer does not exist, otherwise 500

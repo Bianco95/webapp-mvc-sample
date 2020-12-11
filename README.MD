@@ -28,15 +28,13 @@
     mysql -h 172.17.0.2 -u root -p masterdb < initDB.sql
     ```
     
-    initDB.sql initialize the database and it will create the relational tables needed to store the data. Some data will also be added. <br >
+    initDB.sql initialize the database and it will create the relational tables needed to store the data. Some data will also be added.
     **customers**
     customerID | firstName | lastName | username | password | balance |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | Giulio | Bianchini | admin | 123456 | 0 |
     2 | Dippy | Dawg | Pippo | 123456 | 100 |
     3 | Donald | Duck | Paperino | 123456 | 200 |
-
-    <br>
 
     **transactions**
 
@@ -45,17 +43,12 @@
     1 | 2 | 10 | CURRENT_TIMESTAMP | 
     2 | 2 | 20 | CURRENT_TIMESTAMP |  
     3 | 3 | 50 | CURRENT_TIMESTAMP | 
-    4 | 3 | 70 | CURRENT_TIMESTAMP | 
-
-    <br>
-
+    4 | 3 | 70 | CURRENT_TIMESTAMP |
     **superadmins**
 
     adminID | username | 
     --- | --- | 
     1 | admin |  
-
-    <br>
 
 2. Open the project with eclipse EE
 

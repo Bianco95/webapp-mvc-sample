@@ -85,15 +85,21 @@ public class CustomerResource extends HttpServlet {
 			Integer id = Integer.parseInt(request.getParameter("id"));
 			Customer customer = CustomerRepository.getIstance().getCustomerByCustomerID(id);
 			if (customer == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiSingleResponseBuilder(200, customer)));
 		} catch (Exception err) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@POST
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@Override
@@ -103,15 +109,19 @@ public class CustomerResource extends HttpServlet {
 		try {
 			response.setContentType("json/html");
 			Customer customer = new Gson().fromJson(request.getReader(), Customer.class);
+						
+			if(CustomerRepository.getIstance().getCustomerByUsername(customer.getUsername()) != 1) {
+				throw new ServletException("Username already in use");
+			}
+			
 			int result = CustomerRepository.getIstance().createCustomer(customer);
 			if (result != 1) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("Error during create of customer");
 			}
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("customer created", 201)));
-		} catch (Exception e) {
-			System.out.println(e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, err.getMessage());
 		}
 	}
 
@@ -125,13 +135,17 @@ public class CustomerResource extends HttpServlet {
 			response.setContentType("json/html");
 			Customer customerToUpdate = new Gson().fromJson(request.getReader(), Customer.class);
 			if (customerToUpdate == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			CustomerRepository.getIstance().updateCustomer(customerToUpdate);
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("customer updated", 201)));
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 
@@ -146,13 +160,17 @@ public class CustomerResource extends HttpServlet {
 			Integer id = Integer.parseInt(request.getParameter("id"));
 			Customer customerToDelete = CustomerRepository.getIstance().getCustomerByCustomerID(id);
 			if (customerToDelete == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			CustomerRepository.getIstance().deleteCustomer(id);
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("customer deleted", 200)));
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 

@@ -15,104 +15,205 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
         <a class="navbar-brand custom-text" href="index.html">
             Mvc sample</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-            aria-controls="navbarResponsive" aria-expanded="true" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
             </ul>
-            <button class="btn btn-success" onclick="Logout()" type="submit">Logout</button>
+            <button class="btn btn-success btn-md" onclick="Logout()" type="submit">Logout</button>
         </div>
     </nav>
-    <div class="wrapper fadeInDown">
+    <div class="wrapper fadeInDown;">
         <h1 style="font-family: Bellota; color: rgba(138, 28, 96, 0.8);">Transactions</h1>
-        <table id="transactionTable" class="table table-hover center"
-            style="border: 0.5px solid rgb(7, 65, 8); background-color: rgb(162, 230, 192, 0.4);">
-            <thead>
-                <tr>
-                    <th style="text-align:center;" scope="col">#</th>
-                    <th style="text-align:center;" scope="col">Customer ID</th>
-                    <th style="text-align:center;" scope="col">Amount</th>
-                    <th style="text-align:center;" scope="col">Purchase date</th>
-                </tr>
-            <tbody>
-            </tbody>
-        </table>
-        <!--
-        <nav aria-label="...">
-            <ul class="pagination pagination-md">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">1</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-            </ul>
-        </nav>
-        -->
-    </div>
+        <br>
+        <div class="table-wrapper-scroll-y" style="width:100%">
+            <table id="transactionTable" class="table table-hover center" style="border: 0.5px solid rgb(7, 65, 8); background-color: rgb(162, 230, 192, 0.4);
+                position: relative; max-height:500px; overflow: auto; display: block;">
+                <thead>
+                    <tr">
+                        <th style="text-align:center; width: 10%;" scope="col">#</th>
+                        <th style="text-align:center; width: 10%" scope="col">Client ID</th>
+                        <th style="text-align:center; width: 10%" scope="col">Transaction ID</th>
+                        <th style="text-align:center; width: 10%" scope="col">Amount</th>
+                        <th style="text-align:center; width: 10%" scope="col">Purchase date</th>
+                        <th style="text-align:center; width: 10%" scope="col">Edit</th>
+                        <th style="text-align:center; width: 10%" scope="col">Delete</th>
+                        </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
 
+        <div id="updateTransaction"
+            style="position:absolute; width: 200%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
+            <div class="fadeInDown" id="formContent"
+                style="display: block; margin-left: auto; margin-right: auto; margin-top: 10%; opacity: 0.95;">
+                <label>Update amount of transaction</label>
+                <br>
+                <input type="text" id="updateAmount" class="fadeIn first" maxlength="40" placeholder="Amount">
+                <input type="button" onclick="updateTransaction()" id="btnUpdate" class="fadeIn first" value="Update">
+                <input type="button" onclick="closeUpdateTransactionDiv()" class="fadeIn fourth"
+                    style="background-color: rgba(226,106,106,1);" value="Go back">
+            </div>
+        </div>
+
+        <div id="addTransaction"
+            style="position:absolute; width: 200%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
+            <div class="fadeInDown" id="formContent"
+                style="display: block; margin-left: auto; margin-right: auto; margin-top: 10%; opacity: 0.95;">
+                <label>Add a transaction</label>
+                <br>
+                <input type="text" id="addAmount" class="fadeIn first" maxlength="40" placeholder="Amount">
+                <input type="text" id="addCustomerID" class="fadeIn first" placeholder="Customer ID">
+                <input type="button" onclick="addTransaction()" id="btnUpdate" class="fadeIn first" value="Add">
+                <input type="button" onclick="closeTransactionDiv()" class="fadeIn fourth"
+                    style="background-color: rgba(226,106,106,1);" value="Go back">
+            </div>
+        </div>
+
+        <div class="buttom-navbar">
+            <button class="active fa fa-plus" onclick="openTransactionDiv()"></button>
+        </div>
 </body>
 
 <script>
 
-    // WIP
-    // checkSessionExpired();
+    // check cookie before all
+    const cookie = document.cookie;
+    if (document.cookie == undefined || JSON.stringify(cookie) == undefined) {
+        window.location.replace("http://localhost:8080/rest-api/signin.html");
+    }
 
+    const updateTransactionDiv = document.getElementById("updateTransaction");
+    updateTransactionDiv.style.display = "none";
+
+    const addTransactionDiv = document.getElementById("addTransaction");
+    addTransactionDiv.style.display = "none";
+
+    // class for handle transactions
+    class Transaction {
+        transactionID = 0;
+        customerID = 0;
+        amount = 0;
+        purchaseDate = "";
+    }
+
+    transactions = [];
+    transactionIdInScope = 0;
+
+    // call function to fetch transactions id DB
     fetchTransactions();
 
-
     function fetchTransactions() {
-
+        transactions = [];
         fetchTransactionsAjax(function (result) {
-            const response = JSON.parse(result);
-            if (response.code === 200) {
+            try {
+                const response = JSON.parse(result);
+                if (response.code != 200) {
+                    throw new Error("unable to fetch transacion");
+                }
                 let table = document.getElementById("transactionTable");
                 table = cleanTable(table);
                 for (let i = 0; i < response["contents"].length; i++) {
 
-                    let row = table.insertRow(i + 1);
-                    let cell1 = row.insertCell(0);
-                    let cell2 = row.insertCell(1);
-                    let cell3 = row.insertCell(2);
-                    let cell4 = row.insertCell(3);
+                    transaction = new Transaction();
+                    transaction.transactionID = response["contents"][i]["transactionID"];
+                    transaction.customerID = response["contents"][i]["customerID"];
+                    transaction.amount = response["contents"][i]["amount"]
+                    transaction.purchaseDate = response["contents"][i]["purchaseDate"];
+
+                    transactions.push(transaction)
+
+                    const row = table.insertRow(i + 1);
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    const cell3 = row.insertCell(2);
+                    const cell4 = row.insertCell(3);
+                    const cell5 = row.insertCell(4);
+                    const cell6 = row.insertCell(5);
+                    const cell7 = row.insertCell(6);
 
                     cell1.innerHTML = i + 1;
                     cell2.innerHTML = response["contents"][i]["customerID"];
-                    cell3.innerHTML = response["contents"][i]["amount"];
-                    cell4.innerHTML = response["contents"][i]["purchaseDate"];
+                    cell3.innerHTML = response["contents"][i]["transactionID"];
+                    cell4.innerHTML = response["contents"][i]["amount"];
+                    cell5.innerHTML = response["contents"][i]["purchaseDate"];
 
                     cell1.style.textAlign = "center";
                     cell2.style.textAlign = "center";
                     cell3.style.textAlign = "center";
                     cell4.style.textAlign = "center";
+                    cell5.style.textAlign = "center";
+                    cell6.style.textAlign = "center";
+                    cell7.style.textAlign = "center";
+
+                    const btnEdit = document.createElement("button");
+                    btnEdit.innerHTML = "Edit";
+                    btnEdit.classList.add('btn');
+                    btnEdit.classList.add('btn-success');
+                    btnEdit.id = response["contents"][i]["transactionID"];
+                    btnEdit.addEventListener("click", function (e) {
+                        transactionIdInScope = this.id;
+                        updateTransactionDiv.style.display = "block";
+                    });
+                    cell6.align = "center";
+                    cell6.appendChild(btnEdit);
+
+                    const btnDelete = document.createElement("button");
+                    btnDelete.innerHTML = "Delete";
+                    btnDelete.classList.add('btn');
+                    btnDelete.classList.add('btn-danger');
+                    btnDelete.id = response["contents"][i]["transactionID"];
+                    btnDelete.addEventListener("click", function (e) {
+                        if (confirm('Do you really want to delete transaction ' + this.id + ' ?')) {
+                            deleteTransaction(this.id, function (result) {
+                                const response = JSON.parse(result);
+                                if (response.code == 200) {
+                                    alert("Transaction deleted!");
+                                    let table = document.getElementById("transactionTable");
+                                    cleanTable(table);
+                                    setTimeout(function () {
+                                        fetchTransactions();;
+                                    }, 500);
+                                } else {
+                                    alert("There was an error during deleting of a transaction");
+                                }
+                            });
+                        } else {
+                            return;
+                        }
+                    });
+                    cell7.align = "center";
+                    cell7.appendChild(btnDelete);
+
+
+                    cell1.style.verticalAlign = "middle";
+                    cell2.style.verticalAlign = "middle";
+                    cell3.style.verticalAlign = "middle";
+                    cell4.style.verticalAlign = "middle";
+                    cell5.style.verticalAlign = "middle";
+                    cell6.style.verticalAlign = "middle";
+                    cell7.style.verticalAlign = "middle";
                 }
-            } else {
-                // do something
+            } catch (err) {
+                alert("unable to fetch transaction");
             }
         });
     }
 
-    // asynchronous call that is called after the above function
-    // the program wait until an answer is given
-
-
     function fetchTransactionsAjax(callback) {
-        const username = parent.document.URL.substring(parent.document.URL.indexOf('=') + 1, parent.document.URL.length);
-        const cookie = document.cookie.toString();
-        console.log(cookie);
-        if (!cookie) {
+        const cookie = document.cookie;
+        if (cookie.toString() == "undefined") {
             alert("session expired");
             window.location.replace("http://localhost:8080/rest-api/signin.html");
         }
-        const username2 = cookie.substring(cookie.indexOf('=') + 1, cookie.length);
-        console.log(username2);
+        const username = cookie.toString().substring(cookie.indexOf('=') + 1, cookie.length);
         let result;
         $.ajax({
             url: 'http://localhost:8080/rest-api/transactions',
             type: 'GET',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": username
             },
             success: function (data) {
                 result = data;
@@ -120,8 +221,78 @@
         }).done(function () {
             callback(result);
         }).fail(function () {
-            alert("something went wrong during sign up!");
+            alert("something went wrong during fetch of transactions!");
+            return;
+        });
+    }
+
+    function deleteTransaction(transactionID, callback) {
+        $.ajax({
+            url: 'http://localhost:8080/rest-api/transactions?id=' + transactionID,
+            type: 'DELETE',
+            success: function (data) {
+                result = data;
+            }
+        }).done(function () {
             callback(result);
+        }).fail(function () {
+            alert("something went wrong with delete of transaction!");
+        });
+    }
+
+    function updateTransaction() {
+        let amountToUpdate = document.getElementById('updateAmount').value;
+        const transactionToUpdate = transactions.find(elm => elm.transactionID == transactionIdInScope);
+
+        if (amountToUpdate == transactionToUpdate.amount) {
+            alert("no need to update");
+            return;
+        }
+        transactionToUpdate.amount = amountToUpdate;
+
+        $.ajax({
+            url: 'http://localhost:8080/rest-api/transactions?id=' + transactionToUpdate.transactionID,
+            type: 'PUT',
+            data: JSON.stringify(transactionToUpdate),
+            headers: {
+                "Content-Type": "application/json",
+                "Content-Length": transactionToUpdate.length
+            },
+            success: function (data) {
+                fetchTransactions();
+            }
+        }).done(function () {
+            alert("Transaction updated successfully!");
+        }).fail(function () {
+            alert("something went wrong with update of transaction!");
+        });
+    }
+
+    function addTransaction() {
+        const amountToAdd = document.getElementById('addAmount').value;
+        const customerIdToAdd = document.getElementById('addCustomerID').value;
+
+        const dataToSend = {
+            transactionID: null,
+            customerID: customerIdToAdd,
+            amount: amountToAdd,
+            purchaseDate: null
+        }
+        $.ajax({
+            url: 'http://localhost:8080/rest-api/transactions',
+            type: 'POST',
+            data: JSON.stringify(dataToSend),
+            headers: {
+                "Content-Type": "application/json",
+                "Content-Length": dataToSend.length
+            },
+            success: function (data) {
+                fetchTransactions();
+            }
+        }).done(function () {
+            alert("Transaction added successfully!");
+        }).fail(function () {
+            alert("something went wrong with update of transaction!");
         });
     }
 
@@ -132,6 +303,24 @@
             rows[i].parentNode.removeChild(rows[i]);
         }
         return table;
+    }
+
+    function closeUpdateTransactionDiv() {
+        updateTransactionDiv.style.display = "none";
+    }
+
+    function openTransactionDiv() {
+        addTransactionDiv.style.display = "block";
+    }
+
+    function closeTransactionDiv() {
+        addTransactionDiv.style.display = "none";
+    }
+
+    function Logout() {
+        document.cookie = "username=" + "" + ";expires = Thu, 01 Jan 1970 00:00:00 GMT";
+        window.location.replace("http://localhost:8080/rest-api/signin.html");
+        //window.location.replace("http://localhost:8080/rest-api/signin.html");
     }
 
 </script>

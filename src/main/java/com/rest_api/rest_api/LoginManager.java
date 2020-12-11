@@ -25,7 +25,7 @@ public class LoginManager extends HttpServlet {
 			response.setContentType("json/html");
 
 			if (authHeader == null) {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+				throw new ServletException("Unauthorized");
 			}
 
 			String encodedAuth = authHeader.substring(authHeader.indexOf(' ') + 1);
@@ -40,7 +40,7 @@ public class LoginManager extends HttpServlet {
 				response.getOutputStream()
 						.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("success", 200)));
 			} else {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+				throw new ServletException("Unauthorized");
 			}
 		} catch (Exception e) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

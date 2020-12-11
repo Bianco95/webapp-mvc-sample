@@ -35,7 +35,7 @@
   <div class="wrapper fadeInDown">
     <div id="formContent">
       <div class="fadeIn first">
-        <form id="regUser" method="post" action="register.php">
+        <form id="regUser">
           <div id="personaldata">
             <br>
             <p class="fadeIn second ">Insert your data</p>
@@ -56,7 +56,7 @@
               <input id="checkboxConditions" class="fadeIn second" type="checkbox">
               <label for="checkbox1" class="fadeIn second">Accept privacy & policy</label>
             </div>
-            <input type="button" onclick="sendForm()" class="fadeIn fourth"
+            <input type="button" onclick="sendData()" class="fadeIn fourth"
               style="background-color: rgba(38,194,129,1);" value="Sign up">
             <input type="button" onclick="manageForm()" class="fadeIn fourth"
               style="background-color: rgba(226,106,106,1);" value="Back">
@@ -70,8 +70,11 @@
     </div>
   </div>
 
+
   <script>
 
+    // here I define the necessary classes useful for storing data
+    // Customer class 
     class Customer {
 
       name = "";
@@ -80,47 +83,7 @@
       password_1 = "";
       password_2 = "";
 
-      setName(value) {
-        this.name = value;
-      }
-
-      getName() {
-        return this.name;
-      }
-
-      setLastname(value) {
-        this.lastname = value;
-      }
-
-      getLastname() {
-        return this.lastname;
-      }
-
-      setUsername(value) {
-        this.username = value;
-      }
-
-      getUsername() {
-        return this.username;
-      }
-
-      setPassword_1(value) {
-        this.password_1 = value;
-      }
-
-      getPassword_1() {
-        return this.password_1;
-      }
-
-      setPassword_2(value) {
-        this.password_2 = value;
-      }
-
-      getPassword_2() {
-        return this.password_2;
-      }
-
-      //methods that control the fields of the class
+      //methods that validate the properties of the class
 
       checkNameLastname(value) {
         if (value.length > 1 && value.length < 30) {
@@ -131,7 +94,7 @@
       }
 
       checkUsername(value) {
-        var letternumbers = /^[0-9a-zA-Z]+$/;
+        const letternumbers = /^[0-9a-zA-Z]+$/;
         if (value.length > 3 && value.length < 21) {
           if (value.match(letternumbers)) {
             return [true, 0];
@@ -160,60 +123,61 @@
 
   <script>
 
+    // variable needed to manage the display of the forms 
     let show_form = 0;
     document.getElementById('userdata').style.display = 'none';
 
     // list of document variable from html
 
-    var username_document = document.getElementById('username');
-    var password_1_document = document.getElementById('password_1');
-    var password_2_document = document.getElementById('password_2');
-    var name_document = document.getElementById('name');
-    var lastname_document = document.getElementById('lastname');
-    var checkbox_document = document.getElementById('checkboxConditions');
+    let username_document = document.getElementById('username');
+    let password_1_document = document.getElementById('password_1');
+    let password_2_document = document.getElementById('password_2');
+    let name_document = document.getElementById('name');
+    let lastname_document = document.getElementById('lastname');
+    let checkbox_document = document.getElementById('checkboxConditions');
 
     // call checkColors to alert the user if fields are wrong
-
     setInterval(checkColors, 300);
 
     customer = new Customer();
 
+    // function to manage the display of forms
     function manageForm() {
 
       show_form += 1;
 
       if (show_form % 2 != 0) {
 
+        // simple validation of the fields entered by the user
         if (!customer.checkNameLastname(name_document.value)[0]) {
           alert("first name is wrong");
           return;
         }
 
-        alert("name_document is wrong!" + name_document.value);
-        customer.setName(name_document.value);
+        customer.name = name_document.value;
 
         if (!customer.checkNameLastname(lastname_document.value)[0]) {
           alert("last name is wrong");
           return;
         }
 
-        customer.setLastname(lastname_document.value);
+        customer.lastName = lastname_document.value;
 
         // go on to the second part of the form
-
         document.getElementById('personaldata').style.display = 'none';
         $("#userdata").fadeIn();
 
       } else {
 
-        // back to the firs part of the form
-
+        // back to the first part of the form
         $("#personaldata").fadeIn();
         document.getElementById('userdata').style.display = 'none';
       }
 
+
     }
 
+    // every n seconds, check the colors of the fields entered by the user
     function checkColors() {
 
       validUsername = customer.checkUsername(username_document.value);
@@ -240,7 +204,8 @@
 
     }
 
-    function sendForm() {
+    // function used to send datas 
+    function sendData() {
 
       //boolean or array (array are used to get deeper in the error if needed)
       //to check if fields are correct
@@ -257,7 +222,7 @@
         } return;
       }
 
-      customer.setUsername(username_document.value);
+      customer.username = username_document.value;
 
       if (!validPassword[0]) {
         if (validPassword[1] == 0) {
@@ -266,9 +231,14 @@
         return;
       }
 
-      customer.setPassword_1(password_1_document.value);
+      customer.password_1 = password_1_document.value;
 
-      signUp(customer.getUsername(), customer.getPassword_1(), customer.getName(), customer.getLastname());
+      if (!checkbox_document.checked) {
+        alert("You must agree to the terms and conditions to register!");
+        return;
+      }
+
+      signUp(customer.username, customer.password_1, customer.name, customer.lastname);
 
     }
 
@@ -278,23 +248,24 @@
 
     function signUp(username, password, firstName, lastName) {
 
+      //exec the sign up and check for response
       signUpAjax(username, password, firstName, lastName, function (result) {
-        const response = JSON.parse(result);
-        if (response.code === 201) {
+        try {
+          const response = JSON.parse(result);
+          if (response.code != 201) {
+            throw new Error("error during sign up");
+          }
           alert("Sign up successfully!");
           window.location.replace("http://localhost:8080/rest-api/signin.html");
-        } else {
-          alert("something went wrong during sign up!");
+        } catch (err) {
+          alert("error occurred during sign up!");
         }
       });
     }
 
     // asynchronous call that is called after the above function
-    // the program wait until an answer is given
-
-
     function signUpAjax(username, password, firstName, lastName, callback) {
-      var result;
+      let result;
       data = {
         customerID: 0,
         balance: 0,
@@ -312,14 +283,16 @@
           "Content-Type": "application/json",
           "Content-Length": data.length
         },
-        success: function (data) {
+        success: (data) => {
+          alert("qua");
           result = data;
         }
-      }).done(function () {
+      }).done((result) => {
+        alert("qui");
         callback(result);
-      }).fail(function () {
+      }).fail((err) => {
         alert("something went wrong during sign up!");
-        callback(result);
+        return;
       });
     }
 

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Customer {
 	
 	private int customerID;
-	private int balance;
+	private float balance;
 	private String username;
 	private String password;
 	private String firstName;
@@ -36,7 +36,7 @@ public class Customer {
 		this.lastName = lastname;
 	}
 	
-	public void setBalance(int amount) {
+	public void setBalance(float amount) {
 		this.balance = amount;
 	}
 	
@@ -49,7 +49,7 @@ public class Customer {
 		return this.customerID;
 	}
 	
-	public int getBalance() {
+	public float getBalance() {
 		return this.balance;
 	}
 	

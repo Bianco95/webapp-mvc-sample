@@ -7,6 +7,7 @@ import com.rest_api.rest_api.utils.DbController;
 
 import java.sql.*;
 import java.util.Date;
+
 /**
  * 
  * @author giulio
@@ -15,7 +16,7 @@ import java.util.Date;
 public class TransactionRepository {
 
 	private static TransactionRepository istance = null;
-	
+
 	public static TransactionRepository getIstance() {
 		if (istance == null)
 			istance = new TransactionRepository();
@@ -27,9 +28,15 @@ public class TransactionRepository {
 	 * METHOD TO QUERY THE DB
 	 */
 
-	public List<Transaction> getTransactions() {
+	public List<Transaction> getTransactions(Boolean isSuperAdmin, String username) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
-		String sql = "SELECT * from transactions";
+		String sql = "";
+		if (isSuperAdmin) {
+			sql = "SELECT * from transactions";
+		} else {
+			int customerID = CustomerRepository.getIstance().getCustomerByUsername(username);
+			sql = "SELECT * from transactions WHERE customerID ='"+customerID+"'";
+		}
 		try {
 			Statement st = DbController.getIstance().getConnection().createStatement();
 			ResultSet rs = st.executeQuery(sql);
@@ -71,7 +78,7 @@ public class TransactionRepository {
 			st.setTimestamp(3, new Timestamp(new Date().getTime()));
 			queryResult = st.executeUpdate();
 		} catch (Exception e) {
-			System.out.println("e"+e.toString());
+			System.out.println("e" + e.toString());
 			return queryResult;
 		}
 
@@ -85,23 +92,22 @@ public class TransactionRepository {
 			st.setInt(1, transaction.getAmount());
 			st.setInt(2, transaction.getTransactionID());
 			st.executeUpdate();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-	
+
 	public void deleteTransaction(int transactionID) {
 		String sql = "DELETE from transactions where transactionID=?";
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, transactionID);
 			st.executeUpdate();
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-	
-	
+
 	private Transaction createTransactionFromDB(int transactionID, int customerID, int amount, String purchase_date) {
 		Transaction newTransaction = new Transaction();
 		newTransaction.setPurchaseDate(purchase_date);

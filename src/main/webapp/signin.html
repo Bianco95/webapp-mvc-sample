@@ -59,10 +59,10 @@
 
     <script>
 
-        var correctUsername = false;
+        let correctUsername = false;
 
-        var username = document.getElementById('login');
-        var password = document.getElementById('password');
+        let username = document.getElementById('login');
+        let password = document.getElementById('password');
         correctUsername = checkUsername(username.value);
 
         setInterval(checkColors, 300);
@@ -89,7 +89,7 @@
         }
 
         function checkUsername(username) {
-            var letterenumeri = /^[0-9a-zA-Z]+$/;
+            let letterenumeri = /^[0-9a-zA-Z]+$/;
             if (username.length > 3) {
                 if (username.match(letterenumeri)) {
                     return [true, 0];
@@ -102,31 +102,26 @@
         }
 
         function signIn(username, password) {
-
-            signInAjax(username, password, function (result) {
+            signInAjax(username, password, function (result, err) {
                 try {
                     const response = JSON.parse(result);
-                    if (response.code === 200) {
-                        alert("Sign in successfully!");
-                        var date = new Date();
-                        date.setTime(date.getTime() + (2 * 60 * 1000));
-                        var expires = "; expires=" + date.toGMTString();
-                        document.cookie = "username=" + username + ";expires=" + expires;
-                        window.location.replace("http://localhost:8080/rest-api/dashboard.html");
-                    } else {
-                        alert("something went wrong during sign in!");
+                    if (response.code != 200) {
+                        throw new Error("unable to sign in!");
                     }
+                    alert("Sign in successfully!");
+                    const date = new Date();
+                    date.setTime(date.getTime() + (5 * 60 * 1000));
+                    const expires = "; expires=" + date.toGMTString();
+                    document.cookie = "username=" + username + expires;
+                    window.location.replace("http://localhost:8080/rest-api/dashboard.html");
                 } catch (err) {
                     alert("something went wrong during sign in!");
                 }
             });
         }
 
-        // asynchronous call that is called after the above function
-        // the program wait until an answer is given
-
         function signInAjax(username, password, callback) {
-            var result;
+            let result;
             data = {
                 username: username,
                 password: password
@@ -145,9 +140,9 @@
                 }
             }).done(function () {
                 callback(result);
-            }).fail(function () {
+            }).fail(function (err) {
                 alert("something went wrong during sign in!");
-                callback(result);
+                return;
             });
         }
     </script>

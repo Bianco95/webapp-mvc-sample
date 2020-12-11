@@ -7,7 +7,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>com.rest_api.rest_api.CORSFilter</param-value>
+            <param-value>com.rest_api.rest_api</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -38,6 +38,4 @@
 		<servlet-name>Login</servlet-name>
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
-	
-	
 </web-app>

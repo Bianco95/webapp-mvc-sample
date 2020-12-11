@@ -44,6 +44,13 @@ public class TransactionResource extends HttpServlet {
 			throws IOException, ServletException {
 		System.out.println("[get"+this.resourceName+"] called...");
 		try {
+			String username = request.getHeader("Authorization");
+			boolean isSuperAdmin = false;
+			System.out.println(username);
+			if(username == null) {
+				throw new ServletException("Auth header not provided");
+			}
+			isSuperAdmin = CustomerRepository.getIstance().isSuperAdmin(username);
 			Integer page = 0;
 			try {
 				page = Integer.parseInt(request.getParameter("page"));
@@ -51,7 +58,7 @@ public class TransactionResource extends HttpServlet {
 				page = 1;
 			}
 			response.setContentType("json/html");
-			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions();
+			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions(isSuperAdmin, username);
 			if (page == 0) {
 				response.getOutputStream().println(
 						this.ow.writeValueAsString(Utils.ApiContentResponseBuilder(this.resourceName+"s", 200, 0, 0, transactions)));
@@ -71,7 +78,7 @@ public class TransactionResource extends HttpServlet {
 			}
 			response.getOutputStream().println(this.ow
 					.writeValueAsString(Utils.ApiContentResponseBuilder("transactions", 200, page, pages, paginatedTransactions)));
-		} catch (Exception e) {
+		} catch (Exception err) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -87,13 +94,16 @@ public class TransactionResource extends HttpServlet {
 			Transaction transaction = new Gson().fromJson(request.getReader(), Transaction.class);
 			int result = TransactionRepository.getIstance().createTransaction(transaction);
 			if (result != 1) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction created", 201)));
-			// System.out.println(transaction.getBalance());
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 
@@ -107,13 +117,17 @@ public class TransactionResource extends HttpServlet {
 			response.setContentType("json/html");
 			Transaction transactionToUpdate = new Gson().fromJson(request.getReader(), Transaction.class);
 			if (transactionToUpdate == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().updateTransaction(transactionToUpdate);
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction updated", 201)));
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 
@@ -128,13 +142,17 @@ public class TransactionResource extends HttpServlet {
 			Integer id = Integer.parseInt(request.getParameter("id"));
 			Transaction transactionToDelete = TransactionRepository.getIstance().getTransactionByTransactionID(id);
 			if (transactionToDelete == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().deleteTransaction(id);
 			response.getOutputStream()
 					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction deleted", 200)));
-		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (Exception err) {
+			if(err.getMessage() == "not found") {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 	}
 

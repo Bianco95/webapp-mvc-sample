@@ -33,17 +33,12 @@
     customerID | firstName | lastName | username | password | balance |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
     1 | Giulio | Bianchini | admin | 123456 | 0 |
-    2 | Dippy | Dawg | Pippo | 123456 | 100 |
-    3 | Donald | Duck | Paperino | 123456 | 200 |
 
     **transactions**
 
     transactionID | customerID | amount | purchase_date |
     --- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
-    1 | 2 | 10 | CURRENT_TIMESTAMP | 
-    2 | 2 | 20 | CURRENT_TIMESTAMP |  
-    3 | 3 | 50 | CURRENT_TIMESTAMP | 
-    4 | 3 | 70 | CURRENT_TIMESTAMP |
+    1 | 2 | 10 | CURRENT_TIMESTAMP |
     **superadmins**
 
     adminID | username | 

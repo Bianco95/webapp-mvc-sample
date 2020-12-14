@@ -28,18 +28,56 @@ public class TransactionRepository {
 	 * METHOD TO QUERY THE DB
 	 */
 
-	public List<Transaction> getTransactions(Boolean isSuperAdmin, String username) {
+	public List<Transaction> getTransactions(Boolean isSuperAdmin, String username, Integer gt, Integer lt) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
-		String sql = "";
-		if (isSuperAdmin) {
-			sql = "SELECT * from transactions";
-		} else {
-			int customerID = CustomerRepository.getIstance().getCustomerByUsername(username);
-			sql = "SELECT * from transactions WHERE customerID ='"+customerID+"'";
-		}
 		try {
-			Statement st = DbController.getIstance().getConnection().createStatement();
-			ResultSet rs = st.executeQuery(sql);
+			String sql = "";
+			PreparedStatement st = null;
+			int customerID = CustomerRepository.getIstance().getCustomerByUsername(username);
+			
+			if (isSuperAdmin) {
+				sql = "SELECT * from transactions";
+				if(gt != null && lt == null) {
+					sql += " WHERE amount > ?";
+				} else if(gt == null && lt != null) {
+					sql += " WHERE amount < ?";
+				}else {
+					sql += " WHERE amount BETWEEN ? AND ?";
+				}
+				
+			} else {
+				sql = "SELECT * from transactions WHERE customerID =?";
+				if(gt != null && lt == null) {
+					sql += " AND amount > ?";
+				} else if(gt == null && lt != null) {
+					sql += " AND amount < ?";
+				}else {
+					sql += " AND amount BETWEEN ? AND ?";
+				}
+			}
+			
+			st = DbController.getIstance().getConnection().prepareStatement(sql);
+			
+			if(!isSuperAdmin) {
+				st.setInt(1, customerID);
+				if( (gt != null && lt == null) || (gt == null && lt != null)) {
+					st.setInt(2, gt);
+				} else {
+					st.setInt(2, gt);
+					st.setInt(3, lt);
+				}
+			} else {
+				if( (gt != null && lt == null) || (gt == null && lt != null)) {
+					st.setInt(1, gt);
+				} else {
+					st.setInt(1, gt);
+					st.setInt(2, lt);
+				}
+			}
+			
+			System.out.print(sql);
+			
+			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				transactions.add(this.createTransactionFromDB(rs.getInt("transactionID"), rs.getInt("customerID"),
 						rs.getInt("amount"), rs.getString("purchase_date")));
@@ -68,7 +106,6 @@ public class TransactionRepository {
 	}
 
 	public int createTransaction(Transaction newTrasaction) {
-		System.out.println("ciao");
 		String sql = "INSERT INTO transactions VALUES (NULL,?,?,?)";
 		int queryResult = 0;
 		try {

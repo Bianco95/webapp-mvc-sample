@@ -79,6 +79,8 @@
 
     // check cookie before all
     const cookie = document.cookie;
+    console.log(cookie)
+    console.log(JSON.stringify(cookie) == undefined)
     if (document.cookie == undefined || JSON.stringify(cookie) == undefined) {
         window.location.replace("http://localhost:8080/rest-api/signin.html");
     }

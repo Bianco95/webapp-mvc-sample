@@ -1,12 +1,9 @@
 package com.rest_api.rest_api;
 
 import java.util.List;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -18,19 +15,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-
 import com.google.gson.Gson;
-import com.rest_api.rest_api.utils.Utils;
 
 @Path("/transactions")
-public class TransactionResource extends HttpServlet {
-
-	private ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-	protected String resourceName = "";
-	protected Object repository = new Object();
-	//protected Object className = Transaction.class;
+public class TransactionResource extends AbstractResource {
 	
 	public TransactionResource() {
 		this.repository = TransactionRepository.getIstance();
@@ -44,6 +32,7 @@ public class TransactionResource extends HttpServlet {
 			throws IOException, ServletException {
 		System.out.println("[get"+this.resourceName+"] called...");
 		try {
+			response.setContentType("json/html");
 			String username = request.getHeader("Authorization");
 			boolean isSuperAdmin = false;
 			System.out.println(username);
@@ -51,33 +40,13 @@ public class TransactionResource extends HttpServlet {
 				throw new ServletException("Auth header not provided");
 			}
 			isSuperAdmin = CustomerRepository.getIstance().isSuperAdmin(username);
-			Integer page = 0;
-			try {
-				page = Integer.parseInt(request.getParameter("page"));
-			} catch (Exception e) {
-				page = 1;
-			}
-			response.setContentType("json/html");
-			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions(isSuperAdmin, username);
-			if (page == 0) {
-				response.getOutputStream().println(
-						this.ow.writeValueAsString(Utils.ApiContentResponseBuilder(this.resourceName+"s", 200, 0, 0, transactions)));
-			}
-			int sizeOfPages = 1;
-			int pages = Math.round(transactions.size() / 25) == 0 ? 1 : Math.round(transactions.size() / 25)+1;
-			if (transactions.size() <= 25 * page) {
-				sizeOfPages = transactions.size();
-			} else {
-				sizeOfPages = 25 * page;
-			}
-			List<Transaction> paginatedTransactions = new ArrayList<Transaction>();
-			try {
-				paginatedTransactions = transactions.subList(25 * (page - 1), sizeOfPages);
-			} catch (Exception e) {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-			response.getOutputStream().println(this.ow
-					.writeValueAsString(Utils.ApiContentResponseBuilder("transactions", 200, page, pages, paginatedTransactions)));
+			this.dataSanitizing(request);
+			Integer gt = request.getParameter("gt") != null ? Integer.parseInt(request.getParameter("gt")) : null;
+			Integer lt = request.getParameter("lt") != null ? Integer.parseInt(request.getParameter("lt")) : null;
+			System.out.println(gt);
+			System.out.println(lt);
+			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions(isSuperAdmin, username, gt, lt);
+			this.sendAllContents(request, response, transactions);
 		} catch (Exception err) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
@@ -96,8 +65,7 @@ public class TransactionResource extends HttpServlet {
 			if (result != 1) {
 				throw new ServletException("not found");
 			}
-			response.getOutputStream()
-					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction created", 201)));
+			this.sendPostResponse(request, response);
 		} catch (Exception err) {
 			if(err.getMessage() == "not found") {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -120,8 +88,7 @@ public class TransactionResource extends HttpServlet {
 				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().updateTransaction(transactionToUpdate);
-			response.getOutputStream()
-					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction updated", 201)));
+			this.sendPutResponse(request, response);
 		} catch (Exception err) {
 			if(err.getMessage() == "not found") {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -145,8 +112,7 @@ public class TransactionResource extends HttpServlet {
 				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().deleteTransaction(id);
-			response.getOutputStream()
-					.println(this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder("transaction deleted", 200)));
+			this.sendPutResponse(request, response);
 		} catch (Exception err) {
 			if(err.getMessage() == "not found") {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);

@@ -13,27 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 
 public class Utils {
 
-	public static <T> List<T> intersection(List<T> list1, List<T> list2) {
-        List<T> list = new ArrayList<T>();
-
-        for (T t : list1) {
-            if(list2.contains(t)) {
-                list.add(t);
-            }
-        }
-
-        return list;
-    }
+	public static void checkDBConnection() {
+		if(DbController.getIstance().getConnectionStatus() == false) {
+			DbController.getIstance().connect();
+			throw new Error("unable to connect to database");
+		}
+	}
 	
-	public static <T> List<T> union(List<T> list1, List<T> list2) {
-        Set<T> set = new HashSet<T>();
-
-        set.addAll(list1);
-        set.addAll(list2);
-
-        return new ArrayList<T>(set);
-    }
-
 	public static <T> ApiMultipleResponse<T> ApiContentResponseBuilder(String message, int code, Integer page, Integer pages, List<T> contents) {
 		ApiMultipleResponse<T> apiResponse = new ApiMultipleResponse<T>();
 		apiResponse.setMessage(message);

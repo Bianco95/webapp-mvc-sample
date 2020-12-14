@@ -110,7 +110,7 @@
                     }
                     alert("Sign in successfully!");
                     const date = new Date();
-                    date.setTime(date.getTime() + (5 * 60 * 1000));
+                    date.setTime(date.getTime() + (1 * 60 * 1000));
                     const expires = "; expires=" + date.toGMTString();
                     document.cookie = "username=" + username + expires;
                     window.location.replace("http://localhost:8080/rest-api/dashboard.html");

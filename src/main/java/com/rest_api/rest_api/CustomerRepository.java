@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rest_api.rest_api.utils.DbController;
+import com.rest_api.rest_api.utils.Utils;
 
 import java.sql.*;
 
@@ -15,7 +16,6 @@ import java.sql.*;
 public class CustomerRepository {
 
 	private static CustomerRepository istance = null;
-	private List<Customer> customers;
 
 	public static CustomerRepository getIstance() {
 		if (istance == null)
@@ -30,11 +30,14 @@ public class CustomerRepository {
 
 	public List<Customer> getCustomers() {
 		List<Customer> customers = new ArrayList<Customer>();
+		
 		String sql = "SELECT * from customers";
+		
+		Utils.checkDBConnection();
+		
 		try {
 			Statement st = DbController.getIstance().getConnection().createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			// iterate over the returned values
 			while (rs.next()) {
 				customers.add(this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
 						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance")));
@@ -46,15 +49,17 @@ public class CustomerRepository {
 	}
 
 	public Customer getCustomerByCustomerID(int customerID) {
-		String sql = "SELECT * from customers WHERE customerID=" + customerID;
+		String sql = "SELECT * from customers WHERE customerID=?";
 		try {
-			Statement st = DbController.getIstance().getConnection().createStatement();
-			ResultSet rs = st.executeQuery(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
+			st.setInt(1, customerID);
+			ResultSet rs = st.executeQuery();
 
 			if (rs.next()) {
 				return this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
 						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance"));
 			}
+			
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -63,12 +68,14 @@ public class CustomerRepository {
 	}
 
 	public int getCustomerByUsername(String username) {
-		String sql = "SELECT * from customers WHERE username='" + username + "'";
+		String sql = "SELECT * from customers WHERE username=?";
 		try {
-			Statement st = DbController.getIstance().getConnection().createStatement();
-			ResultSet rs = st.executeQuery(sql);
-			if (rs.next()) {
-				return rs.getInt("customerID");
+			PreparedStatement st =  DbController.getIstance().getConnection().prepareStatement(sql);
+			st.setString(1, username);
+            ResultSet resultSet = st.executeQuery();
+			
+			if (resultSet.next()) {
+				return resultSet.getInt("customerID");
 			} else {
 				return 1;
 			}
@@ -79,10 +86,12 @@ public class CustomerRepository {
 	}
 	
 	public int getCustomerByUsernameAndPassword(String username, String password) {
-		String sql = "SELECT * from customers WHERE username='" + username + "' AND password='" + password +"'";
+		String sql = "SELECT * from customers WHERE username=? AND password=?";
 		try {
-			Statement st = DbController.getIstance().getConnection().createStatement();
-			ResultSet rs = st.executeQuery(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
+			st.setString(1, username);
+			st.setString(2, password);
+			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				return 0;
 			} else {
@@ -98,12 +107,6 @@ public class CustomerRepository {
 		String sql = "INSERT INTO customers VALUES (NULL,?, ?, ?, ?, ?)";
 		int queryResult = 0;
 		try {
-			
-			System.out.println(newCustomer.getFirstName());
-			System.out.println(newCustomer.getLastName());
-			System.out.println(newCustomer.getUsername());
-			System.out.println(newCustomer.getPassword());
-			
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, newCustomer.getFirstName());
 			st.setString(2, newCustomer.getLastName());
@@ -144,10 +147,11 @@ public class CustomerRepository {
 	}
 
 	public boolean isSuperAdmin(String username) {
-		String sql = "SELECT * FROM superadmins WHERE username='"+username+"'";
+		String sql = "SELECT * from superadmins WHERE username=?";
 		try {
-			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
-			ResultSet rs = st.executeQuery(sql);
+			PreparedStatement st =  DbController.getIstance().getConnection().prepareStatement(sql);
+			st.setString(1, username);
+            ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				return true;
 			} else {

@@ -41,7 +41,7 @@ public class TransactionRepository {
 					sql += " WHERE amount > ?";
 				} else if(gt == null && lt != null) {
 					sql += " WHERE amount < ?";
-				}else {
+				}else if(gt != null && lt != null){
 					sql += " WHERE amount BETWEEN ? AND ?";
 				}
 				
@@ -51,7 +51,7 @@ public class TransactionRepository {
 					sql += " AND amount > ?";
 				} else if(gt == null && lt != null) {
 					sql += " AND amount < ?";
-				}else {
+				}else if(gt != null && lt != null) {
 					sql += " AND amount BETWEEN ? AND ?";
 				}
 			}
@@ -62,21 +62,18 @@ public class TransactionRepository {
 				st.setInt(1, customerID);
 				if( (gt != null && lt == null) || (gt == null && lt != null)) {
 					st.setInt(2, gt);
-				} else {
+				} if(gt != null && lt != null) {
 					st.setInt(2, gt);
 					st.setInt(3, lt);
 				}
 			} else {
 				if( (gt != null && lt == null) || (gt == null && lt != null)) {
 					st.setInt(1, gt);
-				} else {
+				}else if(gt != null && lt != null) {
 					st.setInt(1, gt);
 					st.setInt(2, lt);
 				}
 			}
-			
-			System.out.print(sql);
-			
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				transactions.add(this.createTransactionFromDB(rs.getInt("transactionID"), rs.getInt("customerID"),

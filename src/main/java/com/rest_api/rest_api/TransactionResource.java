@@ -43,8 +43,6 @@ public class TransactionResource extends AbstractResource {
 			this.dataSanitizing(request);
 			Integer gt = request.getParameter("gt") != null ? Integer.parseInt(request.getParameter("gt")) : null;
 			Integer lt = request.getParameter("lt") != null ? Integer.parseInt(request.getParameter("lt")) : null;
-			System.out.println(gt);
-			System.out.println(lt);
 			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions(isSuperAdmin, username, gt, lt);
 			this.sendAllContents(request, response, transactions);
 		} catch (Exception err) {

@@ -32,7 +32,7 @@
                         <th style="text-align:center; width: 10%;" scope="col">#</th>
                         <th style="text-align:center; width: 10%" scope="col">Client ID</th>
                         <th style="text-align:center; width: 10%" scope="col">Transaction ID</th>
-                        <th style="text-align:center; width: 10%" scope="col">Amount</th>
+                        <th style="text-align:center; width: 10%" scope="col" onclick="sortTableByAmount()">Amount</th>
                         <th style="text-align:center; width: 10%" scope="col">Purchase date</th>
                         <th style="text-align:center; width: 10%" scope="col">Edit</th>
                         <th style="text-align:center; width: 10%" scope="col">Delete</th>
@@ -79,9 +79,7 @@
 
     // check cookie before all
     const cookie = document.cookie;
-    console.log(cookie)
-    console.log(JSON.stringify(cookie) == undefined)
-    if (document.cookie == undefined || JSON.stringify(cookie) == undefined) {
+    if (document.cookie == undefined || JSON.stringify(cookie) == undefined || JSON.stringify(cookie).length < 3) {
         window.location.replace("http://localhost:8080/rest-api/signin.html");
     }
 
@@ -91,6 +89,7 @@
     const addTransactionDiv = document.getElementById("addTransaction");
     addTransactionDiv.style.display = "none";
 
+    let transactionTable = document.getElementById("transactionTable");
     // class for handle transactions
     class Transaction {
         transactionID = 0;
@@ -113,93 +112,115 @@
                 if (response.code != 200) {
                     throw new Error("unable to fetch transacion");
                 }
-                let table = document.getElementById("transactionTable");
-                table = cleanTable(table);
+                transactionTable = cleanTable(transactionTable);
                 for (let i = 0; i < response["contents"].length; i++) {
-
                     transaction = new Transaction();
                     transaction.transactionID = response["contents"][i]["transactionID"];
                     transaction.customerID = response["contents"][i]["customerID"];
                     transaction.amount = response["contents"][i]["amount"]
                     transaction.purchaseDate = response["contents"][i]["purchaseDate"];
-
                     transactions.push(transaction)
-
-                    const row = table.insertRow(i + 1);
-                    const cell1 = row.insertCell(0);
-                    const cell2 = row.insertCell(1);
-                    const cell3 = row.insertCell(2);
-                    const cell4 = row.insertCell(3);
-                    const cell5 = row.insertCell(4);
-                    const cell6 = row.insertCell(5);
-                    const cell7 = row.insertCell(6);
-
-                    cell1.innerHTML = i + 1;
-                    cell2.innerHTML = response["contents"][i]["customerID"];
-                    cell3.innerHTML = response["contents"][i]["transactionID"];
-                    cell4.innerHTML = response["contents"][i]["amount"];
-                    cell5.innerHTML = response["contents"][i]["purchaseDate"];
-
-                    cell1.style.textAlign = "center";
-                    cell2.style.textAlign = "center";
-                    cell3.style.textAlign = "center";
-                    cell4.style.textAlign = "center";
-                    cell5.style.textAlign = "center";
-                    cell6.style.textAlign = "center";
-                    cell7.style.textAlign = "center";
-
-                    const btnEdit = document.createElement("button");
-                    btnEdit.innerHTML = "Edit";
-                    btnEdit.classList.add('btn');
-                    btnEdit.classList.add('btn-success');
-                    btnEdit.id = response["contents"][i]["transactionID"];
-                    btnEdit.addEventListener("click", function (e) {
-                        transactionIdInScope = this.id;
-                        updateTransactionDiv.style.display = "block";
-                    });
-                    cell6.align = "center";
-                    cell6.appendChild(btnEdit);
-
-                    const btnDelete = document.createElement("button");
-                    btnDelete.innerHTML = "Delete";
-                    btnDelete.classList.add('btn');
-                    btnDelete.classList.add('btn-danger');
-                    btnDelete.id = response["contents"][i]["transactionID"];
-                    btnDelete.addEventListener("click", function (e) {
-                        if (confirm('Do you really want to delete transaction ' + this.id + ' ?')) {
-                            deleteTransaction(this.id, function (result) {
-                                const response = JSON.parse(result);
-                                if (response.code == 200) {
-                                    alert("Transaction deleted!");
-                                    let table = document.getElementById("transactionTable");
-                                    cleanTable(table);
-                                    setTimeout(function () {
-                                        fetchTransactions();;
-                                    }, 500);
-                                } else {
-                                    alert("There was an error during deleting of a transaction");
-                                }
-                            });
-                        } else {
-                            return;
-                        }
-                    });
-                    cell7.align = "center";
-                    cell7.appendChild(btnDelete);
-
-
-                    cell1.style.verticalAlign = "middle";
-                    cell2.style.verticalAlign = "middle";
-                    cell3.style.verticalAlign = "middle";
-                    cell4.style.verticalAlign = "middle";
-                    cell5.style.verticalAlign = "middle";
-                    cell6.style.verticalAlign = "middle";
-                    cell7.style.verticalAlign = "middle";
+                    reloadTable(i, transaction);
                 }
             } catch (err) {
                 alert("unable to fetch transaction");
             }
         });
+    }
+
+    let isAscending = 0;
+
+    function sortTableByAmount() {
+
+        isAscending += 1;
+
+        const compare = (a, b) => {
+            if (a.amount < b.amount) {
+                return isAscending % 2 == 0 ? -1 : 1;
+            }
+            if (a.amount > b.amount) {
+                return isAscending % 2 == 0 ? 1 : -1;
+            }
+            return 0;
+        }
+        const sortedTransactions = transactions.sort(compare);
+        transactionTable = cleanTable(transactionTable);
+        for (let i = 0; i < sortedTransactions.length; i++) {
+            reloadTable(i, sortedTransactions[i]);
+        }
+    }
+
+    function reloadTable(i, transaction) {
+        const row = transactionTable.insertRow(i + 1);
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        const cell3 = row.insertCell(2);
+        const cell4 = row.insertCell(3);
+        const cell5 = row.insertCell(4);
+        const cell6 = row.insertCell(5);
+        const cell7 = row.insertCell(6);
+
+        cell1.innerHTML = i + 1;
+        cell2.innerHTML = transaction.customerID;
+        cell3.innerHTML = transaction.transactionID;
+        cell4.innerHTML = transaction.amount;
+        cell5.innerHTML = transaction.purchaseDate;
+
+        cell1.style.textAlign = "center";
+        cell2.style.textAlign = "center";
+        cell3.style.textAlign = "center";
+        cell4.style.textAlign = "center";
+        cell5.style.textAlign = "center";
+        cell6.style.textAlign = "center";
+        cell7.style.textAlign = "center";
+
+        const btnEdit = document.createElement("button");
+        btnEdit.innerHTML = "Edit";
+        btnEdit.classList.add('btn');
+        btnEdit.classList.add('btn-success');
+        btnEdit.id = transaction.transactionID;
+        btnEdit.addEventListener("click", function (e) {
+            transactionIdInScope = this.id;
+            updateTransactionDiv.style.display = "block";
+        });
+        cell6.align = "center";
+        cell6.appendChild(btnEdit);
+
+        const btnDelete = document.createElement("button");
+        btnDelete.innerHTML = "Delete";
+        btnDelete.classList.add('btn');
+        btnDelete.classList.add('btn-danger');
+        btnDelete.id = transaction.transactionID;
+        btnDelete.addEventListener("click", function (e) {
+            if (confirm('Do you really want to delete transaction ' + this.id + ' ?')) {
+                deleteTransaction(this.id, function (result) {
+                    const response = JSON.parse(result);
+                    if (response.code == 200) {
+                        alert("Transaction deleted!");
+                        let table = document.getElementById("transactionTable");
+                        cleanTable(table);
+                        setTimeout(function () {
+                            fetchTransactions();;
+                        }, 500);
+                    } else {
+                        alert("There was an error during deleting of a transaction");
+                    }
+                });
+            } else {
+                return;
+            }
+        });
+        cell7.align = "center";
+        cell7.appendChild(btnDelete);
+
+
+        cell1.style.verticalAlign = "middle";
+        cell2.style.verticalAlign = "middle";
+        cell3.style.verticalAlign = "middle";
+        cell4.style.verticalAlign = "middle";
+        cell5.style.verticalAlign = "middle";
+        cell6.style.verticalAlign = "middle";
+        cell7.style.verticalAlign = "middle";
     }
 
     function fetchTransactionsAjax(callback) {

@@ -1,6 +1,6 @@
 ### MVC Application
 #### Software used for this sample of MVC application
-* **JERSEY** **https://eclipse-ee4j.github.io/jersey/** to develop RESTful web service
+* **HTTPSERVLET** **https://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServlet.html**
 * **mySQL** **https://www.mysql.com/it/** as a database service
 * **TOMCAT** **http://tomcat.apache.org/** as server web
 * **ECLIPSE EE** **https://www.eclipse.org/webtools/jee/** as IDE to develop the whole mvc application
@@ -97,7 +97,8 @@ GET rest-api/transactions
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | `page` | `number` | **Not Required**. Use to get 25 element in order to paginate|
-
+| `lte` | `number` | **Not Required**. (less then equal, filter parameter to get transaction with amount less then equal a value)|
+| `gte` | `number` | **Not Required**. (greater then equal, filter parameter to get transaction with amount greater then equal a value)|
 
 #### Responses
 

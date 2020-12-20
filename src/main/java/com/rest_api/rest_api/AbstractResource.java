@@ -1,9 +1,12 @@
 package com.rest_api.rest_api;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -88,6 +91,17 @@ public abstract class AbstractResource extends HttpServlet {
 		}
 	}
 
+	
+	public <T> void sendSingleContent(@Context HttpServletRequest request, @Context HttpServletResponse response,
+			T content) throws IOException, ServletException {
+		try {
+			response.getOutputStream().println(this.ow.writeValueAsString(Utils.ApiSingleResponseBuilder(200, content)));
+		} catch (Exception e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
 	public void dataSanitizing(@Context HttpServletRequest request) throws IOException {
 		
 		Enumeration<String> parameterNames = request.getParameterNames();
@@ -104,6 +118,7 @@ public abstract class AbstractResource extends HttpServlet {
         }
 	}
 
+	
 	public <T> void sendPostResponse(@Context HttpServletRequest request, @Context HttpServletResponse response)
 			throws IOException, ServletException {
 
@@ -123,5 +138,25 @@ public abstract class AbstractResource extends HttpServlet {
 
 		response.getOutputStream().println(
 				this.ow.writeValueAsString(Utils.ApiGenericResponseBuilder(this.resourceName + " deleted", 200)));
+	}
+	
+	
+	public <T> boolean checkEtag(T oldContent, int etag) {
+		if(Objects.hashCode(oldContent) == etag) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public void handleError(HttpServletResponse response, Exception err) throws IOException {
+		if (err.getMessage() == "not found") {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else if(err.getMessage() == "Etag does not match") {
+			response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+		} else {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 	}
 }

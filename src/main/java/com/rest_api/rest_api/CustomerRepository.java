@@ -29,15 +29,12 @@ public class CustomerRepository {
 	 */
 
 	public List<Customer> getCustomers() {
-		List<Customer> customers = new ArrayList<Customer>();
-		
 		String sql = "SELECT * from customers";
-		
+		List<Customer> customers = new ArrayList<Customer>();
 		Utils.checkDBConnection();
-		
 		try {
-			Statement st = DbController.getIstance().getConnection().createStatement();
-			ResultSet rs = st.executeQuery(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				customers.add(this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
 						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance")));
@@ -50,6 +47,7 @@ public class CustomerRepository {
 
 	public Customer getCustomerByCustomerID(int customerID) {
 		String sql = "SELECT * from customers WHERE customerID=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, customerID);
@@ -59,7 +57,7 @@ public class CustomerRepository {
 				return this.createCustomerFromDB(rs.getInt("customerID"), rs.getString("firstName"),
 						rs.getString("lastName"), rs.getString("username"), rs.getInt("balance"));
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -69,24 +67,26 @@ public class CustomerRepository {
 
 	public int getCustomerByUsername(String username) {
 		String sql = "SELECT * from customers WHERE username=?";
+		Utils.checkDBConnection();
 		try {
-			PreparedStatement st =  DbController.getIstance().getConnection().prepareStatement(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, username);
-            ResultSet resultSet = st.executeQuery();
-			
+			ResultSet resultSet = st.executeQuery();
+
 			if (resultSet.next()) {
 				return resultSet.getInt("customerID");
 			} else {
 				return 1;
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 			return 1;
 		}
 	}
-	
+
 	public int getCustomerByUsernameAndPassword(String username, String password) {
 		String sql = "SELECT * from customers WHERE username=? AND password=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, username);
@@ -105,6 +105,7 @@ public class CustomerRepository {
 
 	public int createCustomer(Customer newCustomer) {
 		String sql = "INSERT INTO customers VALUES (NULL,?, ?, ?, ?, ?)";
+		Utils.checkDBConnection();
 		int queryResult = 0;
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
@@ -123,8 +124,10 @@ public class CustomerRepository {
 
 	public void updateCustomer(Customer customer) {
 		String sql = "UPDATE customers set firstName=?, lastName=?, balance=? where customerID=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
+			System.out.println(customer.getFirstName());
 			st.setString(1, customer.getFirstName());
 			st.setString(2, customer.getLastName());
 			st.setFloat(3, customer.getBalance());
@@ -137,6 +140,7 @@ public class CustomerRepository {
 
 	public void deleteCustomer(int customerID) {
 		String sql = "DELETE from customers where customerID=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, customerID);
@@ -148,22 +152,24 @@ public class CustomerRepository {
 
 	public boolean isSuperAdmin(String username) {
 		String sql = "SELECT * from superadmins WHERE username=?";
+		Utils.checkDBConnection();
 		try {
-			PreparedStatement st =  DbController.getIstance().getConnection().prepareStatement(sql);
+			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setString(1, username);
-            ResultSet rs = st.executeQuery();
+			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				return true;
 			} else {
 				return false;
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 			return false;
 		}
 	}
-	
-	private Customer createCustomerFromDB(int customerID, String firstName, String lastName, String username, float balance) {
+
+	private Customer createCustomerFromDB(int customerID, String firstName, String lastName, String username,
+			float balance) {
 		Customer newCustomer = new Customer();
 		newCustomer.setCustomerID(customerID);
 		newCustomer.setFirstName(firstName);
@@ -172,5 +178,5 @@ public class CustomerRepository {
 		newCustomer.setBalance(balance);
 		return newCustomer;
 	}
-	
+
 }

@@ -23,6 +23,7 @@
     </nav>
     <div class="wrapper fadeInDown;">
         <h1 style="font-family: Bellota; color: rgba(138, 28, 96, 0.8);">Transactions</h1>
+        <button class="btn" onclick="openFilterTransactionDiv()"><i class="fa fa-bars"></i></button>
         <br>
         <div class="table-wrapper-scroll-y" style="width:100%">
             <table id="transactionTable" class="table table-hover center" style="border: 0.5px solid rgb(7, 65, 8); background-color: rgb(162, 230, 192, 0.4);
@@ -44,7 +45,7 @@
         </div>
 
         <div id="updateTransaction"
-            style="position:absolute; width: 200%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
+            style="position:absolute; width: 100%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
             <div class="fadeInDown" id="formContent"
                 style="display: block; margin-left: auto; margin-right: auto; margin-top: 10%; opacity: 0.95;">
                 <label>Update amount of transaction</label>
@@ -57,7 +58,7 @@
         </div>
 
         <div id="addTransaction"
-            style="position:absolute; width: 200%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
+            style="position:absolute; width: 100%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
             <div class="fadeInDown" id="formContent"
                 style="display: block; margin-left: auto; margin-right: auto; margin-top: 10%; opacity: 0.95;">
                 <label>Add a transaction</label>
@@ -70,8 +71,23 @@
             </div>
         </div>
 
+        <div id="filterTransaction"
+            style="position:absolute; width: 100%; height: 100%; background-position: center; background: rgba(0, 0, 0, 0.3)">
+            <div class="fadeInDown" id="formContent"
+                style="display: block; margin-left: auto; margin-right: auto; margin-top: 10%; opacity: 0.95;">
+                <label>Filter transactions by amount</label>
+                <br>
+                <input type="text" id="lteInput" class="fadeIn first" placeholder="less then">
+                <input type="text" id="gteInput" class="fadeIn first" placeholder="greater then">
+                <input type="button" onclick="fetchTransactions()" id="btnUpdate" class="fadeIn first btn-success" value="Apply filter">
+                <input type="button" onclick="closeFilterTransactionDiv()" class="fadeIn fourth"
+                    style="background-color: rgba(226,106,106,1);" value="Go back">
+            </div>
+        </div>
+
         <div class="buttom-navbar">
             <button class="active fa fa-plus" onclick="openTransactionDiv()"></button>
+            
         </div>
 </body>
 
@@ -88,6 +104,9 @@
 
     const addTransactionDiv = document.getElementById("addTransaction");
     addTransactionDiv.style.display = "none";
+
+    const filterTransactionDiv = document.getElementById("filterTransaction");
+    filterTransactionDiv.style.display = "none";
 
     let transactionTable = document.getElementById("transactionTable");
     // class for handle transactions
@@ -230,9 +249,19 @@
             window.location.replace("http://localhost:8080/rest-api/signin.html");
         }
         const username = cookie.toString().substring(cookie.indexOf('=') + 1, cookie.length);
+        let lte = document.getElementById('lteInput').value.replace(/ /g,"");
+        let gte = document.getElementById('gteInput').value.replace(/ /g,"");
+        let url = 'http://localhost:8080/rest-api/transactions';
+        if(lte != "" && gte != "") {
+            url += `?lte=${lte}&gte=${gte}`
+        } else if(lte == "" && gte != "") {
+            url += `?gte=${gte}`
+        } else if(lte != "" && gte == "") {
+            url += `?lte=${lte}`
+        }
         let result;
         $.ajax({
-            url: 'http://localhost:8080/rest-api/transactions',
+            url: url,
             type: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -339,6 +368,15 @@
     function closeTransactionDiv() {
         addTransactionDiv.style.display = "none";
     }
+
+    function closeFilterTransactionDiv() {
+        filterTransactionDiv.style.display = "none";
+    }
+
+    function openFilterTransactionDiv() {
+        filterTransactionDiv.style.display = "block";
+    }
+
 
     function Logout() {
         document.cookie = "username=" + "" + ";expires = Thu, 01 Jan 1970 00:00:00 GMT";

@@ -41,12 +41,12 @@ public class TransactionResource extends AbstractResource {
 			}
 			isSuperAdmin = CustomerRepository.getIstance().isSuperAdmin(username);
 			this.dataSanitizing(request);
-			Integer gt = request.getParameter("gt") != null ? Integer.parseInt(request.getParameter("gt")) : null;
-			Integer lt = request.getParameter("lt") != null ? Integer.parseInt(request.getParameter("lt")) : null;
+			Integer gt = request.getParameter("gte") != null ? Integer.parseInt(request.getParameter("gte")) : null;
+			Integer lt = request.getParameter("lte") != null ? Integer.parseInt(request.getParameter("lte")) : null;
 			List<Transaction> transactions = ((TransactionRepository) this.repository).getTransactions(isSuperAdmin, username, gt, lt);
 			this.sendAllContents(request, response, transactions);
 		} catch (Exception err) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			this.handleError(response, err);
 		}
 	}
 
@@ -65,11 +65,7 @@ public class TransactionResource extends AbstractResource {
 			}
 			this.sendPostResponse(request, response);
 		} catch (Exception err) {
-			if(err.getMessage() == "not found") {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			} else {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
+			this.handleError(response, err);
 		}
 	}
 
@@ -83,6 +79,10 @@ public class TransactionResource extends AbstractResource {
 			response.setContentType("json/html");
 			Transaction transactionToUpdate = new Gson().fromJson(request.getReader(), Transaction.class);
 			if (transactionToUpdate == null) {
+				throw new ServletException("internal error");
+			}
+			Transaction oldTransaction = TransactionRepository.getIstance().getTransactionByTransactionID(transactionToUpdate.getTransactionID());
+			if(oldTransaction == null) {
 				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().updateTransaction(transactionToUpdate);
@@ -110,13 +110,9 @@ public class TransactionResource extends AbstractResource {
 				throw new ServletException("not found");
 			}
 			TransactionRepository.getIstance().deleteTransaction(id);
-			this.sendPutResponse(request, response);
+			this.sendDeleteResponse(request, response);
 		} catch (Exception err) {
-			if(err.getMessage() == "not found") {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			} else {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
+			this.handleError(response, err);
 		}
 	}
 

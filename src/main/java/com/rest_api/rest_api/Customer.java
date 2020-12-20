@@ -69,4 +69,13 @@ public class Customer {
 		return this.password;
 	}
 	
+	public int computeEtag() {
+		Integer customerIDCode = String.valueOf(this.customerID).hashCode();
+		Integer balanceCode = String.valueOf(this.balance).hashCode();
+		Integer firstNameCode = this.firstName.hashCode();
+		Integer lastNameCode = this.lastName.hashCode();
+		 
+		return (customerIDCode + balanceCode + firstNameCode + lastNameCode);
+				
+	}
 }

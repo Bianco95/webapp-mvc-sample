@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rest_api.rest_api.utils.DbController;
+import com.rest_api.rest_api.utils.Utils;
 
 import java.sql.*;
 import java.util.Date;
@@ -33,8 +34,8 @@ public class TransactionRepository {
 		try {
 			String sql = "";
 			PreparedStatement st = null;
-			int customerID = CustomerRepository.getIstance().getCustomerByUsername(username);
-			
+			Utils.checkDBConnection();
+			int customerID = CustomerRepository.getIstance().getCustomerByUsername(username);			
 			if (isSuperAdmin) {
 				sql = "SELECT * from transactions";
 				if(gt != null && lt == null) {
@@ -87,6 +88,7 @@ public class TransactionRepository {
 
 	public Transaction getTransactionByTransactionID(int transactionID) {
 		String sql = "SELECT * from transactions WHERE transactionID=" + transactionID;
+		Utils.checkDBConnection();
 		try {
 			Statement st = DbController.getIstance().getConnection().createStatement();
 			ResultSet rs = st.executeQuery(sql);
@@ -104,6 +106,7 @@ public class TransactionRepository {
 
 	public int createTransaction(Transaction newTrasaction) {
 		String sql = "INSERT INTO transactions VALUES (NULL,?,?,?)";
+		Utils.checkDBConnection();
 		int queryResult = 0;
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
@@ -121,6 +124,7 @@ public class TransactionRepository {
 
 	public void updateTransaction(Transaction transaction) {
 		String sql = "UPDATE transactions set amount=? where transactionID=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, transaction.getAmount());
@@ -133,6 +137,7 @@ public class TransactionRepository {
 
 	public void deleteTransaction(int transactionID) {
 		String sql = "DELETE from transactions where transactionID=?";
+		Utils.checkDBConnection();
 		try {
 			PreparedStatement st = DbController.getIstance().getConnection().prepareStatement(sql);
 			st.setInt(1, transactionID);

@@ -23,8 +23,6 @@
     </nav>
     <div class="wrapper fadeInDown;">
         <h1 style="font-family: Bellota; color: rgba(138, 28, 96, 0.8);">Transactions</h1>
-        <button class="btn" onclick="openFilterTransactionDiv()"><i class="fa fa-bars"></i></button>
-        <br>
         <div class="table-wrapper-scroll-y" style="width:100%">
             <table id="transactionTable" class="table table-hover center" style="border: 0.5px solid rgb(7, 65, 8); background-color: rgb(162, 230, 192, 0.4);
                 position: relative; max-height:500px; overflow: auto; display: block;">
@@ -86,8 +84,8 @@
         </div>
 
         <div class="buttom-navbar">
-            <button class="active fa fa-plus" onclick="openTransactionDiv()"></button>
-            
+            <button class="btn" onclick="openTransactionDiv()"><i class="fa fa-plus"></i></button>
+            <button class="btn" onclick="openFilterTransactionDiv()"><i class="fa fa-bars"></i></button>
         </div>
 </body>
 
@@ -100,6 +98,10 @@
     }
 
     const username = cookie.toString().substring(cookie.indexOf('=') + 1, cookie.length);
+
+    if (username.length < 3 || username == undefined) {
+        window.location.replace("http://localhost:8080/rest-api/signin.html");
+    }
 
     const updateTransactionDiv = document.getElementById("updateTransaction");
     updateTransactionDiv.style.display = "none";

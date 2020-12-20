@@ -71,7 +71,9 @@ public class CustomerResource extends AbstractResource {
 			Customer customer = new Gson().fromJson(request.getReader(), Customer.class);
 
 			System.out.println(customer.getUsername());
-
+			System.out.println(customer.getFirstName());
+			System.out.println(customer.getLastName());
+			
 			if (CustomerRepository.getIstance().getCustomerByUsername(customer.getUsername()) != 1) {
 				throw new ServletException("Username already in use");
 			}

@@ -64,7 +64,7 @@
                 <label>Add a transaction</label>
                 <br>
                 <input type="text" id="addAmount" class="fadeIn first" maxlength="40" placeholder="Amount">
-                <input type="text" id="addCustomerID" class="fadeIn first" placeholder="Customer ID">
+                <input type="text" id="addCustomerID" class="fadeIn first" style="display: none;" placeholder="Customer ID">
                 <input type="button" onclick="addTransaction()" id="btnUpdate" class="fadeIn first" value="Add">
                 <input type="button" onclick="closeTransactionDiv()" class="fadeIn fourth"
                     style="background-color: rgba(226,106,106,1);" value="Go back">
@@ -98,6 +98,8 @@
     if (document.cookie == undefined || JSON.stringify(cookie) == undefined || JSON.stringify(cookie).length < 3) {
         window.location.replace("http://localhost:8080/rest-api/signin.html");
     }
+
+    const username = cookie.toString().substring(cookie.indexOf('=') + 1, cookie.length);
 
     const updateTransactionDiv = document.getElementById("updateTransaction");
     updateTransactionDiv.style.display = "none";
@@ -248,7 +250,6 @@
             alert("session expired");
             window.location.replace("http://localhost:8080/rest-api/signin.html");
         }
-        const username = cookie.toString().substring(cookie.indexOf('=') + 1, cookie.length);
         let lte = document.getElementById('lteInput').value.replace(/ /g,"");
         let gte = document.getElementById('gteInput').value.replace(/ /g,"");
         let url = 'http://localhost:8080/rest-api/transactions';
@@ -336,7 +337,8 @@
             data: JSON.stringify(dataToSend),
             headers: {
                 "Content-Type": "application/json",
-                "Content-Length": dataToSend.length
+                "Content-Length": dataToSend.length,
+                "Authorization": username
             },
             success: function (data) {
                 fetchTransactions();
@@ -362,6 +364,9 @@
     }
 
     function openTransactionDiv() {
+        if(username == "admin") {
+            document.getElementById('addCustomerID').style.display = "inline";
+        }
         addTransactionDiv.style.display = "block";
     }
 

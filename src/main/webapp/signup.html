@@ -284,11 +284,9 @@
           "Content-Length": data.length
         },
         success: (data) => {
-          alert("qua");
           result = data;
         }
       }).done((result) => {
-        alert("qui");
         callback(result);
       }).fail((err) => {
         alert("something went wrong during sign up!");
